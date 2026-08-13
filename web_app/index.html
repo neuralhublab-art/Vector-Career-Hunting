@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural HUB | Vector Career Hunting (Janela Conversacional Única)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#e6fff3',
+                            500: '#00FF87',
+                            600: '#00cc6c',
+                            900: '#003b1e',
+                            dark: '#121214',
+                            card: '#18181b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { background-color: #121214; color: #f4f4f5; font-family: system-ui, -apple-system, sans-serif; overflow: hidden; }
+        .glass-panel { background: rgba(24, 24, 27, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        
+        /* Estilização dos Balões estilo Messenger / ChatGPT */
+        .chat-bubble-left {
+            background-color: #1f1f23;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top-left-radius: 4px;
+        }
+        .chat-bubble-right {
+            background: linear-gradient(135deg, #003b1e 0%, #092c19 100%);
+            border: 1px solid rgba(0, 255, 135, 0.3);
+            border-top-right-radius: 4px;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col justify-between">
+
+    <!-- CABEÇALHO DA PLATAFORMA (SEM ABAS - JANELA ÚNICA CONVERSACIONAL) -->
+    <header class="glass-panel px-6 py-4 flex items-center justify-between border-b border-zinc-800 shrink-0">
+        <div class="flex items-center space-x-4">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
+                <i data-lucide="zap" class="w-6 h-6 text-zinc-950 font-bold"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                    NEURAL HUB
+                    <span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-brand-500/10 text-brand-500 border border-brand-500/20">Consultoria Conversacional v8.0</span>
+                </h1>
+                <p class="text-xs text-zinc-400">Vector Career Hunting Platform (State-of-the-Art JS)</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <div id="llm-indicator" class="flex items-center space-x-2 text-xs font-medium text-emerald-400 bg-emerald-950/70 px-3.5 py-1.5 rounded-xl border border-emerald-500/30">
+                <i data-lucide="cpu" class="w-4 h-4 text-brand-500"></i>
+                <span id="llm-status-text">Motor Híbrido Groq (Llama 3.3 70B) &bull; Active</span>
+            </div>
+            <div class="flex items-center space-x-2 bg-zinc-900/90 px-3 py-1.5 rounded-full border border-zinc-800 text-xs text-zinc-300">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>STRIX Guardian Active</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ÁREA DE JANELA ÚNICA DE CONVERSA (EM TELA CHEIA) -->
+    <main class="flex-1 p-6 max-w-6xl mx-auto w-full flex flex-col overflow-hidden">
+        
+        <div class="glass-panel rounded-2xl p-6 flex-1 flex flex-col justify-between shadow-2xl overflow-hidden">
+            
+            <!-- Janela de Mensagens com Balões -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto space-y-4 pr-2 text-sm">
+                
+                <!-- Balão Inicial do Dr. Carlos Andrade -->
+                <div class="flex items-start gap-3 max-w-[85%]">
+                    <div class="w-9 h-9 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-lg shrink-0">
+                        🏛️
+                    </div>
+                    <div class="chat-bubble-left p-4 rounded-2xl space-y-1 shadow-md">
+                        <div class="flex items-center justify-between gap-4">
+                            <p class="text-brand-500 font-bold text-xs">Dr. Carlos Andrade <span class="text-zinc-500 font-normal">&bull; Sócio Estrategista</span></p>
+                            <span class="text-[10px] text-zinc-500">Agora</span>
+                        </div>
+                        <p class="text-zinc-200 leading-relaxed">Seja muito bem-vindo(a) à Vector Career Hunting! Sou o Dr. Carlos Andrade, Sócio Estrategista. Para darmos o primeiro passo na sua recolocação, me diga como prefere ser chamado(a) ou anexe seu currículo (PDF, Word, LibreOffice ODT ou Foto) no clipe 📎 abaixo com uma legenda!</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CONTAINER DE PÍLULA DE ANEXO SELECIONADO -->
+            <div id="attachment-pill-container" class="hidden pt-3 pb-1">
+                <div class="flex items-center justify-between bg-emerald-950/80 border border-emerald-500/40 px-3.5 py-2 rounded-xl text-xs text-brand-500">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="file-check" class="w-4 h-4 text-brand-500"></i>
+                        <span id="attached-filename" class="font-mono font-bold">arquivo.pdf</span>
+                    </div>
+                    <button onclick="removerAnexo()" class="text-zinc-400 hover:text-red-400 transition-all font-bold text-sm px-1">&times;</button>
+                </div>
+            </div>
+
+            <!-- BARRA DE DIGITAÇÃO COM BOTÃO 📎 E LEGENDA -->
+            <div class="flex gap-2 pt-3 border-t border-zinc-800/80">
+                <input type="file" id="chat-file-input" accept=".pdf,.docx,.txt,.odt,.rtf,.png,.jpg,.jpeg,.webp" onchange="handleFileSelection(event)" class="hidden">
+
+                <!-- Botão de Anexo Multiformato 📎 -->
+                <button id="btn-attach" onclick="document.getElementById('chat-file-input').click()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-3.5 py-3 rounded-xl border border-zinc-700 flex items-center justify-center transition-all" title="Anexar Currículo ou Foto">
+                    <i data-lucide="paperclip" class="w-5 h-5 text-brand-500"></i>
+                </button>
+
+                <input type="text" id="chat-input" placeholder="Digite sua legenda ou mensagem..." onkeypress="handleKeyPress(event)" class="flex-1 bg-zinc-900 text-zinc-100 placeholder-zinc-500 px-4 py-3 rounded-xl border border-zinc-800 focus:outline-none focus:border-brand-500 transition-all text-sm">
+
+                <button onclick="sendChatMessage()" class="bg-brand-500 hover:bg-brand-600 text-zinc-950 font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-brand-500/10">
+                    <span>Enviar</span>
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- RODAPÉ DA APLICAÇÃO -->
+    <footer class="border-t border-zinc-800/80 px-6 py-3 text-center text-xs text-zinc-500 shrink-0">
+        Neural HUB &copy; 2026 | Vector Career Hunting Platform | Governança Multiagente (PMO)
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

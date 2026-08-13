@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Neural HUB | Encontre seu Novo Emprego (Vector Career Hunter)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { 
+            background-color: #0b0f19; 
+            color: #ffffff; 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .bg-accessible-main { background: #0b0f19; }
+        
+        .card-high-contrast { 
+            background-color: #111827; 
+            border: 2px solid #1e293b; 
+            transition: all 0.2s ease-in-out;
+        }
+        .card-high-contrast:hover {
+            border-color: #38bdf8;
+            box-shadow: 0 10px 25px -5px rgba(56, 189, 248, 0.25);
+        }
+
+        .chat-bubble-left {
+            background-color: #1f1f23;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top-left-radius: 4px;
+        }
+        .chat-bubble-right {
+            background: linear-gradient(135deg, #003b1e 0%, #092c19 100%);
+            border: 1px solid rgba(0, 255, 135, 0.3);
+            border-top-right-radius: 4px;
+        }
+
+        a:focus-visible, button:focus-visible {
+            outline: 3px solid #38bdf8;
+            outline-offset: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-accessible-main">
+
+    <!-- SEÇÃO 1: LANDING PAGE PRÉ NEURAL HUB (HOME VISÍVEL POR PADRÃO) -->
+    <div id="landing-page-view" class="min-h-screen flex flex-col justify-between">
+        
+        <!-- CABEÇALHO DA LANDING PAGE -->
+        <header class="max-w-6xl mx-auto w-full px-6 py-8 flex items-center justify-between border-b border-gray-800/60">
+            <div class="flex items-center space-x-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-blue-600 flex items-center justify-center font-bold text-white shadow-md text-xl">
+                    🚀
+                </div>
+                <div>
+                    <span class="font-black text-xl text-white tracking-tight block">NEURAL HUB</span>
+                    <span class="text-xs text-sky-400 font-bold uppercase tracking-wider">Vector Career Hunter Platform</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- HERO SECTION DA LANDING PAGE -->
+        <main class="max-w-5xl mx-auto px-6 py-12 text-center space-y-8 flex-1 flex flex-col justify-center">
+            
+            <div>
+                <span class="inline-flex items-center space-x-2 bg-slate-800 border-2 border-sky-400/40 px-4 py-2 rounded-full text-xs font-extrabold text-sky-300 shadow-md">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-sky-400"></i>
+                    <span>Sua Recolocação Profissional Descomplicada</span>
+                </span>
+            </div>
+
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-tight max-w-4xl mx-auto">
+                Do envio do currículo à entrevista: <span class="text-sky-400">Converse e encontre seu novo emprego</span>
+            </h1>
+
+            <p class="text-lg sm:text-xl text-gray-100 font-medium max-w-3xl mx-auto leading-relaxed">
+                Esqueça os cadastros demorados. Converse com a gente direto pelo navegador, anexe seu currículo, nos conte sobre você e receba na hora as vagas que realmente combinam com seu perfil.
+            </p>
+
+            <!-- BOTÃO CTA QUE ABRE O CHAT APLICAÇÃO -->
+            <div class="pt-4 flex justify-center">
+                <button onclick="abrirAplicativoChat()" aria-label="Enviar meu currículo no chat para iniciar o atendimento" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-9 py-5 rounded-2xl shadow-2xl shadow-sky-500/30 text-lg transition-all transform hover:scale-[1.03] active:scale-[0.98] flex items-center gap-3 cursor-pointer">
+                    <span>Enviar Meu Currículo no Chat</span>
+                    <i data-lucide="paperclip" class="w-6 h-6 text-slate-950"></i>
+                </button>
+            </div>
+
+            <!-- CARDS INFERIORES -->
+            <div class="grid md:grid-cols-3 gap-6 pt-12 text-left max-w-5xl mx-auto w-full">
+                <div class="card-high-contrast p-6 rounded-2xl space-y-3">
+                    <div class="w-12 h-12 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-sky-400">
+                        <i data-lucide="message-square" class="w-6 h-6"></i>
+                    </div>
+                    <h2 class="font-extrabold text-white text-xl tracking-tight">Atendimento Direto no Chat</h2>
+                    <p class="text-base text-gray-200 font-normal leading-relaxed">
+                        Fale com a gente pelo computador ou celular. Sem baixar programas, sem senhas complicadas.
+                    </p>
+                </div>
+
+                <div class="card-high-contrast p-6 rounded-2xl space-y-3">
+                    <div class="w-12 h-12 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-sky-400">
+                        <i data-lucide="file-check-2" class="w-6 h-6"></i>
+                    </div>
+                    <h2 class="font-extrabold text-white text-xl tracking-tight">Seu Currículo Novo em Word</h2>
+                    <p class="text-base text-gray-200 font-normal leading-relaxed">
+                        Receba seu currículo reformulado e pronto para enviar às empresas direto na nossa conversa.
+                    </p>
+                </div>
+
+                <div class="card-high-contrast p-6 rounded-2xl space-y-3">
+                    <div class="w-12 h-12 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-sky-400">
+                        <i data-lucide="target" class="w-6 h-6"></i>
+                    </div>
+                    <h2 class="font-extrabold text-white text-xl tracking-tight">Vagas que Combinam com Você</h2>
+                    <p class="text-base text-gray-200 font-normal leading-relaxed">
+                        Mostramos as oportunidades da sua cidade que mais combinam com o seu perfil para você focar no que dá resultado.
+                    </p>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="border-t border-gray-800 py-6 text-center text-xs font-semibold text-gray-300">
+            Neural HUB &copy; 2026 | Vector Career Hunter Platform &bull; WCAG AAA Compliance
+        </footer>
+
+    </div>
+
+    <!-- SEÇÃO 2: APLICAÇÃO DE CHAT CONVERSACIONAL (OCULTA POR PADRÃO) -->
+    <div id="chat-app-view" class="hidden min-h-screen flex-col justify-between p-4 max-w-6xl mx-auto w-full">
+        
+        <header class="bg-gray-900 border border-gray-800 px-6 py-4 rounded-2xl flex items-center justify-between shrink-0 mb-4">
+            <div class="flex items-center space-x-3">
+                <button onclick="voltarParaLandingPage()" class="text-gray-400 hover:text-white text-xs flex items-center gap-1 bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span>Voltar à Home</span>
+                </button>
+                <div>
+                    <h1 class="text-base font-bold text-white flex items-center gap-2">
+                        NEURAL HUB CHAT
+                        <span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Groq Llama 3.3 70B</span>
+                    </h1>
+                </div>
+            </div>
+            <div class="text-xs text-emerald-400 font-mono flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>STRIX Guardian Active</span>
+            </div>
+        </header>
+
+        <!-- ÁREA DE MENSAGENS -->
+        <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-6 flex-1 flex flex-col justify-between overflow-hidden min-h-[500px]">
+            <div id="chat-messages" class="flex-1 overflow-y-auto space-y-4 pr-2 text-sm max-h-[550px]">
+                <div class="flex items-start gap-3 max-w-[85%]">
+                    <div class="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-lg shrink-0">🏛️</div>
+                    <div class="chat-bubble-left p-4 rounded-2xl space-y-1 shadow-md">
+                        <div class="flex items-center justify-between gap-4">
+                            <p class="text-sky-400 font-bold text-xs">Dr. Carlos Andrade <span class="text-gray-500 font-normal">&bull; Sócio Estrategista</span></p>
+                            <span class="text-[10px] text-gray-500">Agora</span>
+                        </div>
+                        <p class="text-gray-100 leading-relaxed">Seja muito bem-vindo(a) à Vector Career Hunting! Sou o Dr. Carlos Andrade. Para darmos o primeiro passo na sua recolocação, me diga como prefere ser chamado(a) ou anexe seu currículo no botão de clipe 📎 abaixo!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTAINER DE ANEXO SELECIONADO -->
+            <div id="attachment-pill-container" class="hidden pt-3 pb-1">
+                <div class="flex items-center justify-between bg-emerald-950/80 border border-emerald-500/40 px-3.5 py-2 rounded-xl text-xs text-emerald-400">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="file-check" class="w-4 h-4 text-emerald-400"></i>
+                        <span id="attached-filename" class="font-mono font-bold">arquivo.pdf</span>
+                    </div>
+                    <button onclick="removerAnexo()" class="text-gray-400 hover:text-red-400 transition-all font-bold text-sm px-1">&times;</button>
+                </div>
+            </div>
+
+            <!-- BARRA DE ENTRADA DO CHAT -->
+            <div class="flex gap-2 pt-3 border-t border-gray-800">
+                <input type="file" id="chat-file-input" accept=".pdf,.docx,.txt,.odt,.rtf,.png,.jpg,.jpeg,.webp" onchange="handleFileSelection(event)" class="hidden">
+                <button onclick="document.getElementById('chat-file-input').click()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3.5 py-3 rounded-xl border border-gray-700 flex items-center justify-center transition-all" title="Anexar Currículo">
+                    <i data-lucide="paperclip" class="w-5 h-5 text-sky-400"></i>
+                </button>
+                <input type="text" id="chat-input" placeholder="Digite sua mensagem ou nos conte sobre você..." onkeypress="handleKeyPress(event)" class="flex-1 bg-gray-950 text-gray-100 placeholder-gray-500 px-4 py-3 rounded-xl border border-gray-800 focus:outline-none focus:border-sky-500 text-sm">
+                <button onclick="sendChatMessage()" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2">
+                    <span>Enviar</span>
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function abrirAplicativoChat() {
+            document.getElementById('landing-page-view').classList.add('hidden');
+            document.getElementById('chat-app-view').classList.remove('hidden');
+            document.getElementById('chat-app-view').classList.add('flex');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            lucide.createIcons();
+        }
+
+        function voltarParaLandingPage() {
+            document.getElementById('chat-app-view').classList.remove('flex');
+            document.getElementById('chat-app-view').classList.add('hidden');
+            document.getElementById('landing-page-view').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            lucide.createIcons();
+        }
+    </script>
+    <script src="web_app/app.js"></script>
+</body>
+</html>
