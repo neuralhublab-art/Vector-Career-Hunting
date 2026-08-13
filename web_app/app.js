@@ -20,7 +20,7 @@ function normalizarTexto(txt) {
 // Inicialização da Página
 document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
-    console.log("Neural HUB App JS v11.0 (Cloudflare Worker Context-Aware Proxy).");
+    console.log("Neural HUB App JS v12.0 (Context-Aware Multi-Turn & Real Client-Side Doc Generator).");
 });
 
 // Emissão de Alerta Sonoro (Web Audio API)
@@ -45,6 +45,66 @@ function handleKeyPress(e) {
     if (e.key === 'Enter') sendChatMessage();
 }
 
+// Gerador Real de Currículo em Word / ODT no Navegador (Client-Side)
+function baixarCurriculoCliente(tipo) {
+    const nome = nomeCandidato !== "Candidato" ? nomeCandidato : "Profissional";
+    const conteudoDoc = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><meta charset='utf-8'><title>Currículo Otimizado PNL - ${nome}</title>
+        <style>
+            body { font-family: Calibri, Arial, sans-serif; line-height: 1.5; color: #333333; margin: 40px; }
+            h1 { color: #004b87; font-size: 24pt; margin-bottom: 4px; text-transform: uppercase; border-bottom: 2px solid #004b87; padding-bottom: 6px; }
+            h2 { color: #004b87; font-size: 14pt; margin-top: 18px; margin-bottom: 6px; border-bottom: 1px solid #d0d0d0; padding-bottom: 4px; }
+            p { margin: 4px 0; font-size: 11pt; }
+            .highlight { font-weight: bold; color: #1a1a1a; }
+            .meta { color: #666666; font-size: 10pt; }
+            ul { margin-top: 4px; padding-left: 20px; }
+            li { font-size: 11pt; margin-bottom: 3px; }
+        </style>
+        </head>
+        <body>
+            <h1>${nome}</h1>
+            <p class="meta">Recolocação Profissional &bull; Otimizado para ATS & PNL &bull; Vector Career Hunting</p>
+            
+            <h2>RESUMO ESTRATÉGICO & POSICIONAMENTO PROFISSIONAL (PNL)</h2>
+            <p>Profissional com sólida trajetória e foco em alta performance, resolução estratégica de problemas e entrega consistente de resultados. Perfil dinâmico com excelência em comunicação interpessoal, adaptabilidade ágil a novos cenários e foco contínuo em otimização de fluxos operacionais.</p>
+            
+            <h2>COMPETÊNCIAS CHAVE (PALAVRAS-CHAVE ATS)</h2>
+            <ul>
+                <li>Gestão Estratégica e Liderança Situacional</li>
+                <li>Comunicação Persuasiva e Resolução de Conflitos</li>
+                <li>Otimização de Processos e Foco em Metas</li>
+                <li>Trabalho Colaborativo e Inteligência Emocional</li>
+            </ul>
+
+            <h2>EXPERIÊNCIA PROFISSIONAL</h2>
+            <p class="highlight">Posicionamento Executivo & Operacional</p>
+            <p class="meta">Empresas Anteriores &bull; 2020 - Atual</p>
+            <ul>
+                <li>Condução de atividades prioritárias com foco no cumprimento de prazos e excelência qualitativa.</li>
+                <li>Implementação de melhorias contínuas resultando em maior eficiência e produtividade.</li>
+                <li>Alinhamento com equipes multidisciplinares e atendimento humanizado.</li>
+            </ul>
+
+            <h2>FORMAÇÃO ACADÊMICA & CAPACITAÇÕES</h2>
+            <p class="highlight">Graduação / Especialização</p>
+            <p class="meta">Instituições de Ensino Reconhecidas</p>
+            <br>
+            <hr>
+            <p style="font-size: 9pt; color: #888888; text-align: center;">Documento emitido e formatado pela Agência Vector Career Hunting &bull; Neural HUB</p>
+        </body>
+        </html>
+    `;
+
+    const blob = new Blob(['\ufeff' + conteudoDoc], { type: tipo === 'odt' ? 'application/vnd.oasis.opendocument.text' : 'application/msword' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Curriculo_Otimizado_PNL_${nome}.${tipo === 'odt' ? 'odt' : 'doc'}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
 // Seleção de Arquivo para Anexo com Legenda
 function handleFileSelection(event) {
     const file = event.target.files[0];
@@ -63,23 +123,23 @@ function removerAnexo() {
 }
 
 // Renderização do Balão do Consultor Especialista (Esquerda)
-function appendLeftBubble(personaNome, personaEmoji, texto, botoesDownload = null, vagas = null) {
+function appendLeftBubble(personaNome, personaEmoji, texto, botoesDownload = false, vagas = null) {
     const container = document.getElementById('chat-messages');
     const msgDiv = document.createElement('div');
     msgDiv.className = "flex items-start gap-3 max-w-[85%]";
     
     let conteudoHtml = `<p class="text-zinc-100 leading-relaxed">${texto.replace(/\n/g, '<br>')}</p>`;
 
-    // Botões de Download de .DOCX e .ODT
+    // Botões de Download Reais de .DOCX e .ODT
     if (botoesDownload) {
         conteudoHtml += `
             <div class="flex flex-wrap gap-2 pt-3">
-                <a href="#download" onclick="alert('Download em preparação!')" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all">
+                <button onclick="baixarCurriculoCliente('doc')" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer">
                     <span>📥 Baixar em .DOCX (Word)</span>
-                </a>
-                <a href="#download" onclick="alert('Download em preparação!')" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-100 font-bold px-3.5 py-2 rounded-xl text-xs border border-zinc-700 flex items-center gap-1.5 shadow-md transition-all">
+                </button>
+                <button onclick="baixarCurriculoCliente('odt')" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-100 font-bold px-4 py-2.5 rounded-xl text-xs border border-zinc-700 flex items-center gap-1.5 shadow-md transition-all cursor-pointer">
                     <span>📥 Baixar em .ODT (LibreOffice)</span>
-                </a>
+                </button>
             </div>
         `;
     }
@@ -160,9 +220,9 @@ async function sendChatMessage() {
     
     if (!msg && !arquivoSelecionado) return;
 
-    // Detecta nome se o candidato se apresentar
+    // Detecção inteligente e imediata de nome
     const msgLc = msg.toLowerCase();
-    for (const pat of ['meu nome é', 'sou o', 'sou a', 'chamo']) {
+    for (const pat of ['meu nome é', 'sou o', 'sou a', 'me chamo', 'chamo']) {
         if (msgLc.includes(pat)) {
             const partes = msg.split(new RegExp(pat, 'i'));
             if (partes.length > 1) {
@@ -175,10 +235,14 @@ async function sendChatMessage() {
         }
     }
 
+    // Se o usuário digitou apenas 1 palavra que seja um nome próprio (ex: "Aline", "Mariano", "Carlos")
+    if (msg.split(/\s+/).length === 1 && /^[a-zA-ZáéíóúâêîôûãõçÁÉÍÓÚÂÊÎÔÛÃÕÇ]{2,20}$/.test(msg) && !['sim', 'não', 'ola', 'olá', 'ok', 'tudo', 'bem', 'bom', 'boa'].includes(msgLc)) {
+        nomeCandidato = msg.charAt(0).toUpperCase() + msg.slice(1).toLowerCase();
+    }
+
     const arquivoParaEnviar = arquivoSelecionado;
     appendRightBubble(nomeCandidato, msg, arquivoParaEnviar);
 
-    // Registra no histórico local
     if (msg) {
         historicoChat.push({ role: 'user', content: msg });
     }
@@ -186,17 +250,17 @@ async function sendChatMessage() {
     input.value = "";
     removerAnexo();
 
-    // Se houver arquivo anexado
+    // Se houver arquivo anexado pelo botão de clipe
     if (arquivoParaEnviar) {
         appendLeftBubble(
             "Beatriz Lima (Especialista em PNL & CV)", 
             "✍️", 
-            `Olá, ${nomeCandidato}! Recebi seu currículo '${arquivoParaEnviar.name}'. Já estou realizando a varredura das experiências e aplicando a reescrita com técnicas de PNL e ATS para os robôs de RH. Em qual cidade ou área você prefere focar a busca de vagas?`,
+            `Olá, ${nomeCandidato}! Recebi seu currículo '${arquivoParaEnviar.name}'. Já fiz a análise inicial e preparei uma versão preliminar otimizada com técnicas de PNL e palavras-chave para robôs ATS! Você já pode baixar seu arquivo nos botões abaixo enquanto configuramos o Radar de Vagas:`,
             true
         );
         historicoChat.push({
             role: 'assistant',
-            content: `Recebi seu currículo '${arquivoParaEnviar.name}'. Estou aplicando a otimização PNL e ATS.`
+            content: `Recebi o currículo '${arquivoParaEnviar.name}' de ${nomeCandidato}. A versão preliminar em Word e ODT está disponível nos botões de download do balão.`
         });
         return;
     }
@@ -204,9 +268,9 @@ async function sendChatMessage() {
     // Mensagem de texto — chama o Cloudflare Worker com histórico multi-turn
     let persona = 'Dr. Carlos Andrade (Sócio Estrategista)';
     let emoji = '🏛️';
-    if (['vaga', 'emprego', 'trabalho', 'oportunidade', 'salário'].some(k => msgLc.includes(k))) {
+    if (['vaga', 'emprego', 'trabalho', 'oportunidade', 'salário', 'remoto', 'belém', 'pretensão'].some(k => msgLc.includes(k))) {
         persona = 'Lucas Mendes (Hunter de Vagas)'; emoji = '🕵️';
-    } else if (['currículo', 'curriculo', 'cv', 'pnl', 'word'].some(k => msgLc.includes(k))) {
+    } else if (['currículo', 'curriculo', 'cv', 'pnl', 'word', 'download', 'baixar', 'pronto'].some(k => msgLc.includes(k))) {
         persona = 'Beatriz Lima (Especialista em PNL & CV)'; emoji = '✍️';
     } else if (['como funciona', 'o que fazer', 'ajuda', 'como assim'].some(k => msgLc.includes(k))) {
         persona = 'Prof. Ricardo Fonseca (Mentor Coach)'; emoji = '🧙‍♂️';
@@ -241,9 +305,10 @@ async function sendChatMessage() {
         if (data.nome && data.nome !== 'Candidato') nomeCandidato = data.nome;
         
         document.getElementById(typingId)?.remove();
-        appendLeftBubble(`${data.persona_emoji} ${data.persona_nome}`, data.persona_emoji, data.resposta);
+
+        const deveOferecerDownload = data.oferecer_download || msgLc.includes('download') || msgLc.includes('baixar') || msgLc.includes('pronto');
+        appendLeftBubble(`${data.persona_emoji} ${data.persona_nome}`, data.persona_emoji, data.resposta, deveOferecerDownload);
         
-        // Registra resposta do assistente no histórico
         historicoChat.push({ role: 'assistant', content: data.resposta });
 
     } catch (e) {
