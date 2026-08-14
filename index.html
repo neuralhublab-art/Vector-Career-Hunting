@@ -63,6 +63,11 @@
                     <span class="text-xs text-sky-400 font-bold uppercase tracking-wider">Vector Career Hunter Platform</span>
                 </div>
             </div>
+            <div>
+                <button onclick="abrirAplicativoChat(); setTimeout(() => iniciarSimuladorEntrevista(), 400);" class="bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold px-4 py-2 rounded-xl text-xs border border-sky-500/30 flex items-center gap-2 transition-all shadow-md">
+                    <span>🎙️ Simular Entrevista com IA</span>
+                </button>
+            </div>
         </header>
 
         <main class="max-w-5xl mx-auto px-6 py-12 text-center space-y-8 flex-1 flex flex-col justify-center">
@@ -82,10 +87,13 @@
                 Esqueça os cadastros demorados. Converse com a gente direto pelo navegador, anexe seu currículo, nos conte sobre você e receba na hora as vagas que realmente combinam com seu perfil.
             </p>
 
-            <div class="pt-4 flex justify-center">
+            <div class="pt-4 flex flex-wrap justify-center gap-4">
                 <button onclick="abrirAplicativoChat()" aria-label="Iniciar minha consultoria no chat" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-9 py-5 rounded-2xl shadow-2xl shadow-sky-500/30 text-lg transition-all transform hover:scale-[1.03] active:scale-[0.98] flex items-center gap-3 cursor-pointer">
                     <span>Iniciar Minha Consultoria de Recolocação</span>
                     <i data-lucide="arrow-right" class="w-6 h-6 text-slate-950"></i>
+                </button>
+                <button onclick="abrirAplicativoChat(); setTimeout(() => iniciarSimuladorEntrevista(), 400);" aria-label="Treinar entrevista com IA" class="bg-slate-900 hover:bg-slate-800 text-sky-400 font-bold px-7 py-5 rounded-2xl border border-sky-500/30 text-base transition-all flex items-center gap-2 cursor-pointer shadow-lg">
+                    <span>🎙️ Treinar Entrevista com IA</span>
                 </button>
             </div>
 
@@ -104,9 +112,9 @@
                     <div class="w-12 h-12 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-sky-400">
                         <i data-lucide="file-check-2" class="w-6 h-6"></i>
                     </div>
-                    <h2 class="font-extrabold text-white text-xl tracking-tight">Seu Currículo Novo em Word</h2>
+                    <h2 class="font-extrabold text-white text-xl tracking-tight">Suíte Completa em Word</h2>
                     <p class="text-base text-gray-200 font-normal leading-relaxed">
-                        Receba seu currículo reformulado e pronto para enviar às empresas direto na nossa conversa.
+                        Receba seu currículo reformulado, Carta SPIN, Plano de 90 Dias e Roteiro STAR prontos para baixar.
                     </p>
                 </div>
 
@@ -114,7 +122,7 @@
                     <div class="w-12 h-12 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-sky-400">
                         <i data-lucide="target" class="w-6 h-6"></i>
                     </div>
-                    <h2 class="font-extrabold text-white text-xl tracking-tight">Vagas que Combinam com Você</h2>
+                    <h2 class="font-extrabold text-white text-xl tracking-tight">Radar de Vagas com Fit Score</h2>
                     <p class="text-base text-gray-200 font-normal leading-relaxed">
                         Mostramos as oportunidades da sua cidade que mais combinam com o seu perfil para você focar no que dá resultado.
                     </p>
@@ -132,7 +140,7 @@
     <!-- SEÇÃO 2: APLICAÇÃO DE CHAT CONVERSACIONAL (ENTREVISTA DE ANAMNESE) -->
     <div id="chat-app-view" class="hidden min-h-screen flex-col justify-between p-4 max-w-6xl mx-auto w-full">
         
-        <header class="bg-gray-900 border border-gray-800 px-6 py-4 rounded-2xl flex items-center justify-between shrink-0 mb-4">
+        <header class="bg-gray-900 border border-gray-800 px-6 py-4 rounded-2xl flex flex-wrap items-center justify-between shrink-0 mb-4 gap-3">
             <div class="flex items-center space-x-3">
                 <button onclick="voltarParaLandingPage()" class="text-gray-400 hover:text-white text-xs flex items-center gap-1 bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i>
@@ -145,9 +153,14 @@
                     </h1>
                 </div>
             </div>
-            <div class="text-xs text-sky-400 font-mono flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
-                <span>Anamnese & Metodologia Ativa</span>
+            <div class="flex items-center gap-3">
+                <button onclick="iniciarSimuladorEntrevista()" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-4 py-1.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer">
+                    <span>🎙️ Simular Entrevista</span>
+                </button>
+                <div class="text-xs text-sky-400 font-mono flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+                    <span>Anamnese Ativa</span>
+                </div>
             </div>
         </header>
 
