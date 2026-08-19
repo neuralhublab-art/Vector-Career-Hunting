@@ -1,44 +1,14 @@
-// State Management Dinâmico & 100% Anonimizado (Vector Career Hunting v20.0 - LGPD Compliant)
-let nomeCandidato = "Candidato";
-let cargoAlvo = "Profissional Especialista";
-let areaEspecialidade = "geral";
-let cidadeAlvo = "Brasil (100% Remoto)";
-let salarioPretensao = "A Combinar";
+// State Management da Aplicação (Vector Career Hunting v21.0 - Motor de Reposicionamento Estratégico)
+let nomeCandidato = "Aline Aparecida Fagundes Paz Rocha";
+let cargoAlvo = "Analista Financeiro & Tesouraria (Contas a Pagar & Cobrança)";
+let areaEspecialidade = "financeiro";
+let cidadeAlvo = "Betim - MG (100% Remoto)";
+let salarioPretensao = "R$ 3.500,00 a R$ 4.500,00";
 let arquivoSelecionado = null;
 let audioCtx = null;
 let historicoChat = [];
 let modoSimuladorEntrevista = false;
 let perguntaSimuladaAtual = 0;
-
-// Perfil Dinâmico do Candidato (Alimentado dinamicamente via Chat e Arquivo Anexado)
-let perfilDinamico = {
-    nome: "Seu Nome Completo",
-    titulo: "Seu Cargo Almejado | Especialidades Principais | Formato Remoto/Híbrido",
-    contato: "Sua Cidade - UF • Seu Telefone • seu.email@exemplo.com • linkedin.com/in/seu-perfil",
-    cidade: "Brasil",
-    remoto: "100% Remoto",
-    salario: "A Combinar",
-    resumo: "Profissional com sólida trajetória e histórico comprovado de entrega consistente de resultados quantitativos, resolução ágil de problemas complexos e excelência operacional. Especialista em otimização de rotinas, cumprimento rigoroso de prazos e alinhamento estratégico com a liderança.",
-    competencias: [
-        "Gestão Estratégica & Métricas: Planejamento, OKRs, KPIs e Otimização de Processos.",
-        "Comunicação & Negociação: Alinhamento Executivo e Resolução de Conflitos.",
-        "Sistemas & Ferramentas: Domínio de ERPs corporativos, Pacote Office e Softwares de Gestão."
-    ],
-    experiencias: [
-        {
-            empresa: "Empresa / Organização Anterior",
-            cargo: "Seu Cargo / Função Principal",
-            periodo: "Ano Inicial - Ano Final",
-            atividades: [
-                "Liderou rotinas operacionais e estratégicas da área, garantindo alta performance e cumprimento de 100% dos prazos e metas estabelecidas.",
-                "Implementou melhorias em processos internos que reduziram retrabalhos e elevaram a eficiência das entregas."
-            ]
-        }
-    ],
-    formacao: [
-        "Graduação / Pós-Graduação na sua área de formação - Instituição de Ensino Superior"
-    ]
-};
 
 // ── CLOUDFLARE WORKER & VPS MODELFILE PROXY
 const WORKER_URL = "https://neuralhub-api.neuralhub-lab.workers.dev";
@@ -53,49 +23,9 @@ function normalizarTexto(txt) {
     return txt;
 }
 
-// ── PARSER DINÂMICO DE ENTRADA DO CANDIDATO
-function extrairDadosDinamicos(txt) {
-    const t = txt.toLowerCase();
-
-    // Área e Cargo
-    if (t.includes('financeir') || t.includes('contas a pagar') || t.includes('cobrança') || t.includes('cobranca') || t.includes('tesouraria')) {
-        cargoAlvo = "Analista Financeiro & Tesouraria (Contas a Pagar & Cobrança)";
-        areaEspecialidade = "financeiro";
-        perfilDinamico.titulo = "Analista Financeiro & Tesouraria | Contas a Pagar | Cobrança & Conciliação Bancária";
-        perfilDinamico.resumo = "Profissional com sólida experiência em rotinas financeiras, contas a pagar, conciliação bancária, régua de cobrança e tesouraria. Histórico comprovado no controle de liquidação de títulos, relacionamento bancário e redução de inadimplência com foco em liquidez e sustentabilidade de caixa.";
-        perfilDinamico.competencias = [
-            "Finanças & Tesouraria: Contas a Pagar e Receber, Fluxo de Caixa, Conciliação Bancária Diária, Emissão de Borderôs, Liquidação de Títulos.",
-            "Cobrança & Análise de Crédito: Estruturação de Régua de Cobrança Ativa e Preventiva, Negociação de Títulos e Mitigação de Inadimplência.",
-            "Sistemas & Ferramentas: Domínio de ERPs corporativos, Emissão de Notas Fiscais e Excel Avançado (PROCV, Fórmulas Financeiras, Relatórios Gerenciais)."
-        ];
-    } else if (t.includes('ti') || t.includes('desenvolvedor') || t.includes('sistemas') || t.includes('software')) {
-        cargoAlvo = "Analista de Sistemas / Desenvolvedor";
-        areaEspecialidade = "ti";
-        perfilDinamico.titulo = "Desenvolvedor de Software | Sistemas & Integrações | Metodologias Ágeis";
-    }
-
-    // Cidade / Localização
-    if (t.includes('betim')) {
-        cidadeAlvo = "Betim - MG (100% Remoto)";
-        perfilDinamico.cidade = "Betim - MG";
-    } else if (t.includes('belo horizonte') || t.includes('bh')) {
-        cidadeAlvo = "Belo Horizonte - MG (100% Remoto)";
-        perfilDinamico.cidade = "Belo Horizonte - MG";
-    } else if (t.includes('são paulo') || t.includes('sp')) {
-        cidadeAlvo = "São Paulo - SP (100% Remoto)";
-        perfilDinamico.cidade = "São Paulo - SP";
-    }
-
-    // Salário
-    const matchSalario = txt.match(/(\d{1,2}\.?\d{3})\s*(a|à|até|-)\s*(\d{1,2}\.?\d{3})/i);
-    if (matchSalario) {
-        salarioPretensao = `R$ ${matchSalario[1]} a R$ ${matchSalario[3]}`;
-    }
-}
-
 document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
-    console.log("Vector Career Hunting JS v20.0 inicializado (LGPD Compliant).");
+    console.log("Vector Career Hunting JS v21.0 inicializado (Engine de Reposicionamento).");
 });
 
 function playAlertSound() {
@@ -120,7 +50,7 @@ function handleKeyPress(e) {
 }
 
 function obterNomeLimpo() {
-    return nomeCandidato !== "Candidato" ? nomeCandidato : "Profissional";
+    return nomeCandidato !== "Candidato" ? nomeCandidato : "Aline Aparecida Fagundes Paz Rocha";
 }
 
 function dispararDownloadBlob(htmlContent, filename, tipo) {
@@ -135,23 +65,23 @@ function dispararDownloadBlob(htmlContent, filename, tipo) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 📑 SUÍTE COMPLETA DE GERADORES DE DOCUMENTOS DINÂMICOS (SEM HARDCODE)
+// 📑 SUÍTE DE DOCUMENTOS REESTRUTURADOS POR REENGENHARIA DE CARREIRA
 // ─────────────────────────────────────────────────────────────────────────────
 
-// 1. CURRÍCULO OTIMIZADO PROFISSIONAL (PADRÃO ATS LIMPO)
+// 1. CURRÍCULO 100% REPOSICIONADO PARA ROTINAS FINANCEIRAS & TESOURARIA
 function baixarCurriculoCliente(tipo) {
     const nome = obterNomeLimpo();
     const doc = `
         <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-        <head><meta charset='utf-8'><title>Currículo Profissional Otimizado - ${nome}</title>
+        <head><meta charset='utf-8'><title>Currículo Profissional - ${nome}</title>
         <style>
             body { font-family: Calibri, Arial, sans-serif; line-height: 1.45; color: #1f2937; margin: 35px 45px; }
             h1 { color: #0369a1; font-size: 20pt; margin-bottom: 2px; text-transform: uppercase; font-weight: bold; }
-            .subtitle { color: #0284c7; font-size: 11.5pt; font-weight: bold; margin-bottom: 4px; }
+            .subtitle { color: #0284c7; font-size: 11pt; font-weight: bold; margin-bottom: 4px; }
             .contact { color: #4b5563; font-size: 9.5pt; border-bottom: 1.5px solid #0284c7; padding-bottom: 8px; margin-bottom: 14px; }
             h2 { color: #0369a1; font-size: 11.5pt; margin-top: 14px; margin-bottom: 4px; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
             p { margin: 3px 0; font-size: 10pt; }
-            .job-title { font-weight: bold; color: #0f172a; font-size: 10.5pt; }
+            .job-title { font-weight: bold; color: #0f172a; font-size: 10pt; }
             .job-company { color: #0369a1; font-weight: bold; font-size: 10pt; }
             .job-meta { color: #64748b; font-size: 9pt; margin-bottom: 3px; }
             ul { margin-top: 2px; margin-bottom: 8px; padding-left: 18px; }
@@ -160,40 +90,64 @@ function baixarCurriculoCliente(tipo) {
         </head>
         <body>
             <h1>${nome.toUpperCase()}</h1>
-            <p class="subtitle">${perfilDinamico.titulo}</p>
-            <p class="contact">${cidadeAlvo} &bull; Pretensão: ${salarioPretensao} &bull; Disponibilidade Imediata</p>
+            <p class="subtitle">Analista Financeiro Sênior & Tesouraria | Contas a Pagar | Cobrança, Conciliação & Faturamento</p>
+            <p class="contact">Betim, MG &bull; (31) 99116-6174 &bull; alineafpaz@gmail.com &bull; linkedin.com/in/aline-paz-11a9663b7 &bull; 100% Remoto</p>
             
             <h2>Resumo Profissional</h2>
-            <p>${perfilDinamico.resumo}</p>
+            <p>Profissional com mais de 13 anos de sólida experiência corporativa em Finanças, Controladoria e Gestão de Custos. Especialista em rotinas de Contas a Pagar, Conciliação Bancária diária, Análise de Crédito, Liquidação de Títulos e estruturação de Régua de Cobrança com foco em redução de inadimplência e previsibilidade de caixa. Diferencial estratégico por unir domínio prático de rotinas financeiras à formação em Direito (compliance de contratos e segurança jurídica) e vivência em liderança de faturamento e controle de custos operacionais.</p>
             
             <h2>Competências & Ferramentas</h2>
             <ul>
-                ${perfilDinamico.competencias.map(c => `<li>${c}</li>`).join('')}
+                <li><strong>Finanças & Tesouraria:</strong> Contas a Pagar e Receber, Gestão de Fluxo de Caixa, Conciliação Bancária Diária de Extratos, Emissão de Borderôs, Liquidação de Títulos e Relacionamento Bancário.</li>
+                <li><strong>Crédito, Cobrança & Compliance:</strong> Análise e Concessão de Crédito, Régua de Cobrança Ativa/Preventiva, Recuperação de Títulos Vencidos, Gestão de Contratos e Mitigação de Riscos.</li>
+                <li><strong>Faturamento & Custos:</strong> Emissão e Conferência de Notas Fiscais, Auditoria Tributária de Remessas, Conciliação de Fretes e Despesas com Fornecedores.</li>
+                <li><strong>Sistemas & Ferramentas:</strong> Sistemas ERPs Corporativos, Emissão de NFs, Excel Avançado (PROCV, Fórmulas Financeiras, Relatórios Gerenciais e Tabelas Dinâmicas).</li>
             </ul>
             
-            <h2>Experiência Profissional</h2>
-            <p><span class="job-company">Empresa de Atuação Profissional</span> &ndash; ${cidadeAlvo}</p>
-            <p class="job-title">${cargoAlvo}</p>
-            <p class="job-meta">Trajetória e Conquistas Consolidadas</p>
+            <h2>Experiência Profissional Reestruturada</h2>
+            
+            <p><span class="job-company">CASA FERREIRA GONÇALVES</span> &ndash; Contagem, MG</p>
+            <p class="job-title">Líder de Operações, Faturamento & Controle de Custos</p>
+            <p class="job-meta">Março de 2021 &ndash; Abril de 2024</p>
             <ul>
-                <li>Responsável pela gestão e execução das rotinas operacionais e estratégicas da área, garantindo 100% de pontualidade e conformidade nos processos.</li>
-                <li>Estruturou fluxos de trabalho que reduziram retrabalhos, mitigaram riscos de inadimplência/perdas e otimizaram a produtividade da equipe.</li>
-                <li>Atuou no controle diário de indicadores de desempenho (KPIs) e suporte direto à tomada de decisão das lideranças.</li>
+                <li>Gerenciou a rotina de faturamento e emissão de notas fiscais da operação, garantindo 100% de conformidade tributária e alinhamento direto com a área Contábil/Financeira.</li>
+                <li>Estruturou a conciliação de faturas de transportadoras e auditoria de fretes, eliminando cobranças indevidas e reduzindo custos operacionais.</li>
+                <li>Implementou rotinas de controle de prazos e checklists diários de liberação de pagamentos e liquidação de despesas operacionais.</li>
             </ul>
 
-            <h2>Formação Acadêmica & Certificações</h2>
+            <p><span class="job-company">CASA FERREIRA GONÇALVES</span> &ndash; Belo Horizonte, MG</p>
+            <p class="job-title">Analista Financeiro & Tesouraria (Contas a Pagar & Cobrança)</p>
+            <p class="job-meta">Novembro de 2010 &ndash; Março de 2021 (11 anos)</p>
             <ul>
-                ${perfilDinamico.formacao.map(f => `<li>${f}</li>`).join('')}
+                <li>Responsável pelo controle de ponta a ponta de Contas a Pagar e liquidação de compromissos financeiros, garantindo 100% de pontualidade e aproveitamento de descontos de antecipação.</li>
+                <li>Estruturou a régua de cobrança preventiva e ativa de títulos em atraso, alcançando redução de mais de 30% nos índices de inadimplência e recuperando recebíveis essenciais para o caixa.</li>
+                <li>Realizou a conciliação bancária diária de múltiplos extratos, conferência de borderôs e relacionamento contínuo com gerentes de contas de instituições financeiras.</li>
+                <li>Conduziu análises de crédito detalhadas para concessão de prazos e limites comerciais a clientes, mitigando riscos de perdas financeiras.</li>
+            </ul>
+
+            <p><span class="job-company">PETRÓLEO BRASILEIRO S/A (PETROBRAS)</span> &ndash; Betim, MG</p>
+            <p class="job-title">Estagiária Administrativa / Processos</p>
+            <p class="job-meta">Agosto de 2009 &ndash; Agosto de 2010</p>
+            <ul>
+                <li>Suporte ao mapeamento de processos operacionais, auditoria de rotinas administrativas e elaboração da matriz de responsabilidades organizacionais.</li>
+            </ul>
+
+            <h2>Formação Acadêmica & Especializações</h2>
+            <ul>
+                <li><strong>Bacharelado em Direito</strong> &ndash; Faculdade Una Betim (2018 &ndash; 2023) &bull; <em>Ênfase em Direito Contratual, Compliance e Recuperação de Crédito</em></li>
+                <li><strong>Tecnologia em Processos Gerenciais</strong> &ndash; Faculdade de Tecnologia SENAI (2008 &ndash; 2010) &bull; <em>Ênfase em Controladoria e Gestão de Fluxo Financeiro</em></li>
+                <li><strong>Pós-Graduação em Logística & Processos</strong> &ndash; PUC Minas (2014) &bull; <em>Foco em Gestão de Custos e Otimização Operacional</em></li>
             </ul>
 
             <h2>Informações Adicionais</h2>
             <ul>
-                <li><strong>Disponibilidade:</strong> Imediata para atuação em regime ${cidadeAlvo.includes('Remoto') ? '100% Remoto ou Híbrido' : 'Presencial / Híbrido'}</li>
+                <li><strong>Disponibilidade:</strong> Imediata para atuação em formato 100% Remoto (Betim/MG e Nacional)</li>
+                <li><strong>Idiomas:</strong> Inglês Básico &bull; <strong>Habilitação:</strong> CNH B</li>
             </ul>
         </body>
         </html>
     `;
-    dispararDownloadBlob(doc, `Curriculo_Otimizado_${nome.replace(/\s+/g, '_')}`, tipo);
+    dispararDownloadBlob(doc, `Curriculo_Otimizado_Aline_Paz_Financeiro`, tipo);
 }
 
 // 2. CARTA DE APRESENTAÇÃO PERSUASIVA (SPIN SELLING)
@@ -210,29 +164,28 @@ function baixarCartaApresentacao(tipo) {
         </head>
         <body>
             <h1>${nome.toUpperCase()}</h1>
-            <p class="meta">${cargoAlvo} &bull; ${cidadeAlvo}</p>
-            <p><strong>À Equipe de Recrutamento & Liderança da Vaga,</strong></p>
+            <p class="meta">Analista Financeiro Sênior & Tesouraria &bull; Betim/MG &bull; (31) 99116-6174 &bull; alineafpaz@gmail.com</p>
+            <p><strong>À Equipe de Recrutamento & Liderança Financeira,</strong></p>
             
-            <p><strong>[SITUAÇÃO]:</strong> Acompanho com admiração o posicionamento da sua organização no mercado, onde a eficiência operacional, a disciplina nos processos e a entrega de valor sustentável tornaram-se pilares indispensáveis de competitividade.</p>
+            <p><strong>[SITUAÇÃO]:</strong> Acompanho a solidez e a trajetória de expansão da sua empresa no mercado, onde o controle minucioso do fluxo de caixa, a pontualidade nos compromissos de pagamento e a liquidez são alicerces fundamentais para a tomada de decisão executiva.</p>
             
-            <p><strong>[PROBLEMA & IMPLICAÇÃO]:</strong> Em cenários de alta demanda, a falta de padronização em rotinas críticas, a ausência de conciliação diária de indicadores ou gargalos de fluxo podem gerar custos desnecessários, retrabalhos e perda de previsibilidade para a gestão.</p>
+            <p><strong>[PROBLEMA & IMPLICAÇÃO]:</strong> Em operações corporativas dinâmicas, a falta de conciliação diária de extratos, a desorganização em contas a pagar ou a ausência de uma régua ativa de cobrança podem gerar custos desnecessários com juros/multas, aumento de inadimplência e atritos com fornecedores e instituições bancárias.</p>
             
-            <p><strong>[SOLUÇÃO & IMPACTO]:</strong> Como ${cargoAlvo}, trago um histórico comprovado de rigor analítico, cumprimento integral de prazos e otimização de rotinas. Em experiências anteriores, atuei diretamente na resolução de gargalos operacionais e na estruturação de processos com alta conformidade e previsibilidade de resultados.</p>
+            <p><strong>[SOLUÇÃO & IMPACTO]:</strong> Com mais de 11 anos de experiência dedicada a rotinas de Contas a Pagar, Conciliação Bancária e Cobrança na Casa Ferreira Gonçalves, aliada à vivência em faturamento/controle de custos e formação em Direito, trago uma combinação única de disciplina operacional, rigor de conciliação e visão preventiva de compliance contratual.</p>
             
-            <p>Estou à inteira disposição para uma conversa direta onde poderei detalhar como minhas competências podem agregar valor imediato às metas estratégicas da sua equipe.</p>
+            <p>Estou à inteira disposição para um alinhamento direto onde poderei detalhar como minha experiência pode assegurar previsibilidade e eficiência imediata à sua equipe de finanças.</p>
             <br>
             <p>Atenciosamente,</p>
-            <p><strong>${nome}</strong><br>${cargoAlvo}</p>
+            <p><strong>${nome}</strong><br>Analista Financeiro Sênior & Tesouraria</p>
         </body></html>
     `;
-    dispararDownloadBlob(doc, `Carta_Apresentacao_${nome.replace(/\s+/g, '_')}`, tipo);
+    dispararDownloadBlob(doc, `Carta_Apresentacao_Aline_Paz_Financeiro`, tipo);
 }
 
-// 3. PLANO EXECUTIVO DOS PRIMEIROS 90 DIAS (THE 90-DAY PLAN)
+// 3. PLANO EXECUTIVO DOS PRIMEIROS 90 DIAS
 function baixarPlano90Dias(tipo) {
-    const nome = obterNomeLimpo();
     const doc = `
-        <html><head><meta charset='utf-8'><title>Plano de 90 Dias - ${nome}</title>
+        <html><head><meta charset='utf-8'><title>Plano de 90 Dias - Aline Paz</title>
         <style>
             body { font-family: Calibri, Arial, sans-serif; line-height: 1.5; color: #1f2937; margin: 40px; }
             h1 { color: #0369a1; font-size: 20pt; text-transform: uppercase; border-bottom: 2px solid #0369a1; padding-bottom: 6px; }
@@ -244,38 +197,37 @@ function baixarPlano90Dias(tipo) {
         </head>
         <body>
             <h1>Plano Estratégico dos Primeiros 90 Dias</h1>
-            <p style="color:#64748b;">Profissional: <strong>${nome}</strong> &bull; Cargo Alvo: <strong>${cargoAlvo}</strong></p>
+            <p style="color:#64748b;">Candidata: <strong>Aline Aparecida Fagundes Paz Rocha</strong> &bull; Cargo: <strong>Analista Financeiro & Tesouraria</strong></p>
             
-            <h2>FASE 1: PRIMEIROS 30 DIAS — IMERSÃO & MAPEAMENTO DE PROCESSOS</h2>
+            <h2>FASE 1: PRIMEIROS 30 DIAS — IMERSÃO & MAPEAMENTO DE CONTAS A PAGAR / ERP</h2>
             <ul>
-                <li>Mapeamento profundo de ferramentas, sistemas ERP corporativos e rotinas operacionais da área.</li>
-                <li>Identificação de fornecedores, prazos críticos e auditoria de eventuais gargalos de fluxo.</li>
-                <li>Alinhamento direto com a liderança sobre metas prioritárias e expectativas de entregas rápidas (quick-wins).</li>
+                <li>Mapeamento profundo do plano de contas, ERP corporativo, rotinas de contas a pagar, conciliação e régua de cobrança atual.</li>
+                <li>Identificação de fornecedores críticos, prazos de vencimento e auditoria de pendências em borderôs bancários.</li>
+                <li>Alinhamento direto com a liderança sobre metas prioritárias de liquidez e compliance financeiro.</li>
             </ul>
 
-            <h2>FASE 2: DE 31 A 60 DIAS — PADRONIZAÇÃO & OTIMIZAÇÃO DE FLUXO</h2>
+            <h2>FASE 2: DE 31 A 60 DIAS — CONCILIAÇÃO DIÁRIA & OTIMIZAÇÃO DA RÉGUA DE COBRANÇA</h2>
             <ul>
-                <li>Padronização das rotinas diárias com foco em eliminação de divergências e retrabalhos.</li>
-                <li>Ativação de réguas de controle e acompanhamento de indicadores de desempenho (KPIs).</li>
-                <li>Garantia de 100% de pontualidade no cumprimento de compromissos e prazos operacionais.</li>
+                <li>Padronização da rotina diária de conciliação bancária, eliminando 100% de divergências entre extratos e ERP.</li>
+                <li>Ativação de régua de cobrança preventiva e acompanhamento ativo de títulos vencidos para antecipação de recebíveis.</li>
+                <li>Garantia de agendamento de 100% dos pagamentos a fornecedores com antecedência para captura de descontos.</li>
             </ul>
 
-            <h2>FASE 3: DE 61 A 90 DIAS — DASHBOARDS, AUTONOMIA & ALTA PERFORMANCE</h2>
+            <h2>FASE 3: DE 61 A 90 DIAS — DASHBOARDS DE FLUXO DE CAIXA & ALTA PERFORMANCE</h2>
             <ul>
-                <li>Consolidação de relatórios executivos de acompanhamento e indicadores gerenciais para a liderança.</li>
-                <li>Apresentação de propostas de melhoria contínua e automação de rotinas.</li>
-                <li>Consolidação de autonomia total e referência de excelência operacional na equipe.</li>
+                <li>Consolidação de relatórios executivos de fluxo de caixa realizado vs. projetado e índices de inadimplência.</li>
+                <li>Apresentação de melhorias contínuas para a gestão com propostas de automação de conciliação.</li>
+                <li>Autonomia total e excelência na gestão diária de tesouraria e contas a pagar.</li>
             </ul>
         </body></html>
     `;
-    dispararDownloadBlob(doc, `Plano_90_Dias_${nome.replace(/\s+/g, '_')}`, tipo);
+    dispararDownloadBlob(doc, `Plano_90_Dias_Aline_Paz`, tipo);
 }
 
 // 4. GUIA DE RESPOSTAS STAR PARA ENTREVISTAS
 function baixarGuiaRespostasSTAR(tipo) {
-    const nome = obterNomeLimpo();
     const doc = `
-        <html><head><meta charset='utf-8'><title>Guia de Respostas STAR - ${nome}</title>
+        <html><head><meta charset='utf-8'><title>Guia de Respostas STAR - Aline Paz</title>
         <style>
             body { font-family: Calibri, Arial, sans-serif; line-height: 1.5; color: #1f2937; margin: 40px; }
             h1 { color: #0369a1; font-size: 20pt; border-bottom: 2px solid #0369a1; padding-bottom: 6px; }
@@ -285,39 +237,38 @@ function baixarGuiaRespostasSTAR(tipo) {
         </style>
         </head>
         <body>
-            <h1>Roteiro de Respostas STAR para Entrevistas</h1>
-            <p style="color:#64748b;">Profissional: <strong>${nome}</strong> &bull; Cargo: <strong>${cargoAlvo}</strong></p>
+            <h1>Roteiro de Respostas STAR para Entrevistas Financeiras</h1>
+            <p style="color:#64748b;">Candidata: <strong>Aline Aparecida Fagundes Paz Rocha</strong> &bull; Analista Financeiro & Tesouraria</p>
             
-            <h2>PERGUNTA 1: "Conte-me sobre um momento em que você gerenciou uma situação de alta complexidade sob pressão."</h2>
+            <h2>PERGUNTA 1: "Como você lida com sua transição de experiências entre Finanças, Logística e Direito?"</h2>
             <div class="box">
-                <p><strong>[S] Situação:</strong> Enfrentamos um cenário com divergências de processos e prazos curtos que exigiam resolução ágil.</p>
-                <p><strong>[T] Tarefa:</strong> Eu precisava auditar as informações, identificar a causa raiz das inconsistências e regularizar o fluxo sem comprometer prazos críticos.</p>
-                <p><strong>[A] Ação:</strong> Realizei o batimento detalhado dos dados, criei uma rotina de conferência diária e parametrizei os controles no sistema.</p>
-                <p><strong>[R] Resultado:</strong> Eliminamos 100% das inconsistências e estabelecemos uma rotina preventiva que evitou a recorrência do problema.</p>
+                <p><strong>[S] Situação:</strong> Atuei por mais de uma década no coração financeiro da Casa Ferreira Gonçalves e assumi a liderança de operações e faturamento, somando a formação em Direito.</p>
+                <p><strong>[T] Tarefa:</strong> Integrar essas competências para entregar uma gestão financeira à prova de falhas.</p>
+                <p><strong>[A] Ação:</strong> Utilizo meu background jurídico para auditar contratos e negociar cobranças com segurança legal, e minha vivência em processos para garantir que faturamento e contas a pagar operem sem atritos ou divergências.</p>
+                <p><strong>[R] Resultado:</strong> Essa visão sistêmica me permitiu gerenciar carteiras de pagamentos com zero atrasos e recuperar dívidas complexas com alto índice de sucesso.</p>
             </div>
 
-            <h2>PERGUNTA 2: "Como você lida com negociações desafiadoras e alinhamento de expectativas?"</h2>
+            <h2>PERGUNTA 2: "Conte-me sobre um momento em que você gerenciou uma divergência financeira crítica."</h2>
             <div class="box">
-                <p><strong>[S] Situação:</strong> Havia clientes/parceiros com pendências que necessitavam de alinhamento com preservação do relacionamento comercial.</p>
-                <p><strong>[T] Tarefa:</strong> Regularizar as pendências garantindo o cumprimento de acordos sem atritos institucionais.</p>
-                <p><strong>[A] Ação:</strong> Adotei uma postura empática e resolutiva, compreendendo as necessidades da contraparte e propondo um cronograma viável.</p>
-                <p><strong>[R] Resultado:</strong> Recuperamos os compromissos em atraso com alto índice de adesão e mantivemos a parceria comercial ativa e saudável.</p>
+                <p><strong>[S] Situação:</strong> Havia divergências acumuladas em borderôs bancários e lançamentos no fechamento do período.</p>
+                <p><strong>[T] Tarefa:</strong> Sanear as contas, identificar a causa raiz e regularizar o saldo contábil.</p>
+                <p><strong>[A] Ação:</strong> Realizei o batimento cruzado de cada título com os extratos, corrigi parâmetros no sistema e estabeleci um checklist diário de conciliação.</p>
+                <p><strong>[R] Resultado:</strong> Zeramos 100% das inconsistências em 48 horas e a nova rotina eliminou novos erros no fechamento mensal.</p>
             </div>
 
-            <h2>PERGUNTA 3: "Por que devemos contratar você para esta oportunidade de ${cargoAlvo}?"</h2>
+            <h2>PERGUNTA 3: "Por que devemos contratar você para a posição de Analista Financeiro?"</h2>
             <div class="box">
-                <p><strong>Resposta Ancorada:</strong> "Porque reúno sólida experiência prática comprovada na área de ${cargoAlvo}, aliada a disciplina operacional, rigor analítico e foco inegociável em pontualidade, previsibilidade e entrega de resultados de alto impacto."</p>
+                <p><strong>Resposta Ancorada:</strong> "Porque reúno mais de 11 anos de prática direta em contas a pagar, tesouraria e cobrança ativa, com histórico comprovado de pontualidade, redução de inadimplência e rigor analítico de compliance."</p>
             </div>
         </body></html>
     `;
-    dispararDownloadBlob(doc, `Guia_STAR_${nome.replace(/\s+/g, '_')}`, tipo);
+    dispararDownloadBlob(doc, `Guia_STAR_Aline_Paz_Financeiro`, tipo);
 }
 
 // 5. CHECK-UP ONE-PAGER LINKEDIN
 function baixarCheckupLinkedIn(tipo) {
-    const nome = obterNomeLimpo();
     const doc = `
-        <html><head><meta charset='utf-8'><title>Check-up LinkedIn - ${nome}</title>
+        <html><head><meta charset='utf-8'><title>Check-up LinkedIn - Aline Paz</title>
         <style>
             body { font-family: Calibri, Arial, sans-serif; line-height: 1.5; color: #1f2937; margin: 40px; }
             h1 { color: #0369a1; font-size: 20pt; border-bottom: 2px solid #0369a1; padding-bottom: 6px; }
@@ -327,24 +278,24 @@ function baixarCheckupLinkedIn(tipo) {
         </head>
         <body>
             <h1>Check-up & Otimização do LinkedIn (Padrão Recruiter)</h1>
-            <p style="color:#64748b;">Profissional: <strong>${nome}</strong></p>
+            <p style="color:#64748b;">Candidata: <strong>Aline Aparecida Fagundes Paz Rocha</strong></p>
             
             <h2>1. SEU NOVO TÍTULO PROFISSIONAL (COPIAR & COLAR NO LINKEDIN):</h2>
-            <div class="box">${perfilDinamico.titulo}</div>
+            <div class="box">Analista Financeiro Sênior & Tesouraria | Contas a Pagar | Cobrança & Conciliação Bancária | ERPs & Fluxo de Caixa</div>
 
             <h2>2. SEU RESUMO EXECUTIVO EM 4 BLOCOS (PNL):</h2>
             <div class="box">
-                [1. QUEM SOU]: Profissional atuante na área de ${cargoAlvo} com sólida experiência no gerenciamento de rotinas operacionais e estratégicas.<br><br>
-                [2. HARD SKILLS]: ${perfilDinamico.competencias.join(' &bull; ')}<br><br>
-                [3. CONQUISTAS]: Histórico consistente de pontualidade em processos corporativos, otimização de fluxos operacionais e redução de inconsistências.<br><br>
-                [4. CONTATO]: Aberto(a) a conexões estratégicas e novas oportunidades profissionais em formato ${cidadeAlvo}.
+                [1. QUEM SOU]: Profissional com mais de 13 anos de sólida atuação em Finanças e Controladoria, com especialização em Contas a Pagar, Análise de Crédito, Cobrança Ativa e Gestão de Tesouraria.<br><br>
+                [2. HARD SKILLS]: Contas a Pagar & Receber &bull; Conciliação Bancária Diária &bull; Régua de Cobrança & Negociação &bull; Emissão de Borderôs &bull; Liquidação de Títulos &bull; Faturamento de NFs &bull; ERPs &bull; Excel Avançado.<br><br>
+                [3. CONQUISTAS]: Mais de uma década garantindo 100% de pontualidade em pagamentos corporativos, estruturação de rotinas de análise de crédito e redução expressiva de inadimplência na Casa Ferreira Gonçalves.<br><br>
+                [4. CONTATO]: Aberta a conexões estratégicas e novas oportunidades profissionais em formato 100% Remoto (Betim/MG e Nacional).
             </div>
 
             <h2>3. CONFIGURAÇÃO DO SELO 'OPEN TO WORK':</h2>
             <p>Ative a visibilidade configurada como <strong>"Apenas para Recrutadores"</strong> para manter o posicionamento executivo de alta demanda sem expor selo público.</p>
         </body></html>
     `;
-    dispararDownloadBlob(doc, `Checkup_LinkedIn_${nome.replace(/\s+/g, '_')}`, tipo);
+    dispararDownloadBlob(doc, `Checkup_LinkedIn_Aline_Paz_Financeiro`, tipo);
 }
 
 // 6. DOWNLOAD EM LOTE
@@ -362,16 +313,16 @@ function baixarKitCompleto() {
 
 const PERGUNTAS_MOCK_INTERVIEW = [
     {
-        pergunta: "Olá! Sou o Prof. Ricardo Fonseca. Vamos iniciar sua Simulação de Entrevista na Vector Career Hunting! Primeira pergunta: 'Por que você está buscando uma nova oportunidade neste momento e qual foi a sua principal entrega no seu último cargo?'",
-        criterio: "Clareza na transição sem falar mal da empresa anterior e apresentação de entrega quantitativa."
+        pergunta: "Olá, Aline! Sou o Prof. Ricardo Fonseca. Vamos iniciar sua Simulação de Entrevista na Vector Career Hunting! Primeira pergunta: 'Por que você está buscando uma nova oportunidade neste momento e qual foi a sua principal entrega na sua trajetória de mais de 10 anos na área financeira?'",
+        criterio: "Clareza na transição sem falar mal da empresa anterior e apresentação de entrega quantitativa em finanças."
     },
     {
-        pergunta: "Muito bom! Segunda pergunta desafiadora: 'Descreva uma situação em que você lidou com um processo difícil ou um problema complexo sob pressão. O que aconteceu e como você resolveu?'",
-        criterio: "Capacidade de autoanálise, rigor e foco na solução ágil."
+        pergunta: "Muito bom! Segunda pergunta desafiadora: 'Descreva uma situação em que você lidou com uma divergência financeira complexa ou cobrança difícil. O que aconteceu e como você resolveu?'",
+        criterio: "Capacidade de autoanálise, rigor de conciliação e foco na solução ágil."
     },
     {
-        pergunta: "Excelente! Terceira e última pergunta: 'Qual é a sua pretensão salarial e por que a nossa empresa deveria escolher você para esta posição?'",
-        criterio: "Ancoragem salarial segura e pitch de valor Unique Value Proposition."
+        pergunta: "Excelente! Terceira e última pergunta: 'Qual é a sua pretensão salarial e por que a nossa empresa deveria escolher você para a posição de Analista Financeiro / Tesouraria?'",
+        criterio: "Ancoragem salarial segura entre R$ 3.500 e R$ 4.500 e pitch de valor Unique Value Proposition."
     }
 ];
 
@@ -382,7 +333,7 @@ function iniciarSimuladorEntrevista() {
     appendLeftBubble(
         "Prof. Ricardo Fonseca (Mentor Coach)",
         "🧙‍♂️",
-        `🎙️ **MODO SIMULADOR DE ENTREVISTAS ATIVADO!**\n\nOlá, ${obterNomeLimpo()}! Sou o Prof. Ricardo Fonseca. Vou conduzir uma simulação prática de entrevista para a vaga de **${cargoAlvo}**.\n\n👉 **Pergunta 1 de 3:**\n"${PERGUNTAS_MOCK_INTERVIEW[0].pergunta.split('Primeira pergunta: ')[1] || PERGUNTAS_MOCK_INTERVIEW[0].pergunta}"`
+        `🎙️ **MODO SIMULADOR DE ENTREVISTAS ATIVADO!**\n\nOlá, Aline! Sou o Prof. Ricardo Fonseca. Vou conduzir uma simulação prática de entrevista para a vaga de **Analista Financeiro & Tesouraria**.\n\n👉 **Pergunta 1 de 3:**\n"${PERGUNTAS_MOCK_INTERVIEW[0].pergunta.split('Primeira pergunta: ')[1] || PERGUNTAS_MOCK_INTERVIEW[0].pergunta}"`
     );
 }
 
@@ -420,18 +371,18 @@ function appendLeftBubble(personaNome, personaEmoji, texto, painelDocumentos = f
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-950/80 border border-slate-800 p-3 rounded-xl">
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span class="text-xs text-gray-300">ATS Pass Score: <strong class="text-emerald-400 font-mono">96% (Aprovado)</strong></span>
+                        <span class="text-xs text-gray-300">ATS Pass Score: <strong class="text-emerald-400 font-mono">97% (Altamente Competitiva)</strong></span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
-                        <span class="text-xs text-gray-300">Pretensão Salarial: <strong class="text-sky-300">${salarioPretensao} (${cidadeAlvo})</strong></span>
+                        <span class="text-xs text-gray-300">Pretensão Salarial: <strong class="text-sky-300">R$ 3.500 a R$ 4.500 (100% Remoto)</strong></span>
                     </div>
                 </div>
 
-                <p class="text-xs font-bold text-sky-400 uppercase tracking-wider">📥 Baixar Documentos Otimizados da sua Consultoria:</p>
+                <p class="text-xs font-bold text-sky-400 uppercase tracking-wider">📥 Baixar Suíte de Documentos Reposicionados para Finanças & Tesouraria:</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <button onclick="baixarCurriculoCliente('doc')" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-3.5 py-2 rounded-xl text-xs flex items-center justify-between shadow-md transition-all cursor-pointer">
-                        <span>📄 Currículo Otimizado</span>
+                        <span>📄 Currículo Otimizado (Finanças)</span>
                         <span class="text-[10px] bg-slate-950/20 px-1.5 py-0.5 rounded font-mono">.DOCX</span>
                     </button>
                     <button onclick="baixarCartaApresentacao('doc')" class="bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold px-3.5 py-2 rounded-xl text-xs border border-sky-500/30 flex items-center justify-between shadow-md transition-all cursor-pointer">
@@ -439,7 +390,7 @@ function appendLeftBubble(personaNome, personaEmoji, texto, painelDocumentos = f
                         <span class="text-[10px] bg-slate-900 px-1.5 py-0.5 rounded font-mono">.DOCX</span>
                     </button>
                     <button onclick="baixarPlano90Dias('doc')" class="bg-slate-800 hover:bg-slate-700 text-zinc-100 font-bold px-3.5 py-2 rounded-xl text-xs border border-slate-700 flex items-center justify-between shadow-md transition-all cursor-pointer">
-                        <span>🎯 Plano dos Primeiros 90 Dias</span>
+                        <span>🎯 Plano de 90 Dias (Tesouraria/Finanças)</span>
                         <span class="text-[10px] bg-slate-900 px-1.5 py-0.5 rounded font-mono">.DOCX</span>
                     </button>
                     <button onclick="baixarGuiaRespostasSTAR('doc')" class="bg-slate-800 hover:bg-slate-700 text-zinc-100 font-bold px-3.5 py-2 rounded-xl text-xs border border-slate-700 flex items-center justify-between shadow-md transition-all cursor-pointer">
@@ -481,8 +432,8 @@ function appendLeftBubble(personaNome, personaEmoji, texto, painelDocumentos = f
                 `).join('')}
 
                 <div class="bg-slate-950 border border-slate-800 p-3.5 rounded-xl space-y-1.5 mt-2">
-                    <p class="text-xs font-bold text-sky-300">🏢 Target Companies Mapeadas em ${cidadeAlvo}:</p>
-                    <p class="text-xs text-gray-400">Recomendamos prospecção ativa de conexão com gestores em: <strong>Inter, Localiza, Stellantis, Mater Dei, Hotmart, MRV e Usiminas</strong>.</p>
+                    <p class="text-xs font-bold text-sky-300">🏢 Target Companies Mapeadas em Betim/MG e Nacional Remoto:</p>
+                    <p class="text-xs text-gray-400">Recomendamos prospecção ativa de conexão com gestores em: <strong>Inter, Localiza, Stellantis (Betim/MG), Mater Dei, Hotmart, MRV e Usiminas</strong>.</p>
                 </div>
             </div>
         `;
@@ -547,24 +498,6 @@ async function sendChatMessage() {
     
     if (!msg && !arquivoSelecionado) return;
 
-    extrairDadosDinamicos(msg);
-
-    // Detecção dinâmica de nome
-    const msgLc = msg.toLowerCase();
-    for (const pat of ['meu nome é', 'sou o', 'sou a', 'me chamo', 'chamo']) {
-        if (msgLc.includes(pat)) {
-            const partes = msg.split(new RegExp(pat, 'i'));
-            if (partes.length > 1) {
-                const extraido = partes[1].trim().split(/\s+/)[0].replace(/[^a-zA-ZáéíóúâêîôûãõçÁÉÍÓÚÂÊÎÔÛÃÕÇ]/g, '');
-                if (extraido.length > 1) {
-                    nomeCandidato = extraido.charAt(0).toUpperCase() + extraido.slice(1).toLowerCase();
-                    perfilDinamico.nome = nomeCandidato;
-                }
-            }
-            break;
-        }
-    }
-
     const arquivoParaEnviar = arquivoSelecionado;
     appendRightBubble(nomeCandidato, msg, arquivoParaEnviar);
 
@@ -582,14 +515,14 @@ async function sendChatMessage() {
             appendLeftBubble(
                 "Prof. Ricardo Fonseca (Mentor Coach)",
                 "🧙‍♂️",
-                `👏 **AVALIAÇÃO DA RESPOSTA 1:**\n- **Nota:** 9.5 / 10\n- **Pontos Fortes:** Demonstrou clareza de transição profissional e maturidade.\n- **Dica de PNL:** Enfatize ainda mais os volumes e metas superadas na sua carreira.\n\n👉 **Pergunta 2 de 3:**\n"${PERGUNTAS_MOCK_INTERVIEW[1].pergunta.split('Segunda pergunta desafiadora: ')[1] || PERGUNTAS_MOCK_INTERVIEW[1].pergunta}"`
+                `👏 **AVALIAÇÃO DA RESPOSTA 1:**\n- **Nota:** 9.6 / 10\n- **Pontos Fortes:** Excelente narrativa ao articular a sólida experiência em contas a pagar e controle de custos.\n- **Dica de PNL:** Enfatize os volumes financeiros gerenciados e a liquidação pontual de títulos.\n\n👉 **Pergunta 2 de 3:**\n"${PERGUNTAS_MOCK_INTERVIEW[1].pergunta.split('Segunda pergunta desafiadora: ')[1] || PERGUNTAS_MOCK_INTERVIEW[1].pergunta}"`
             );
             return;
         } else if (perguntaSimuladaAtual === 2) {
             appendLeftBubble(
                 "Prof. Ricardo Fonseca (Mentor Coach)",
                 "🧙‍♂️",
-                `👏 **AVALIAÇÃO DA RESPOSTA 2:**\n- **Nota:** 9.7 / 10\n- **Pontos Fortes:** Excelente capacidade de resolução sob pressão e controle emocional.\n- **Dica de PNL:** Ancore como a prevenção de erros fortaleceu as entregas da equipe.\n\n👉 **Pergunta 3 de 3:**\n"${PERGUNTAS_MOCK_INTERVIEW[2].pergunta.split('Terceira e última pergunta: ')[1] || PERGUNTAS_MOCK_INTERVIEW[2].pergunta}"`
+                `👏 **AVALIAÇÃO DA RESPOSTA 2:**\n- **Nota:** 9.8 / 10\n- **Pontos Fortes:** Demonstrou grande responsabilidade operacional, controle emocional e foco em conciliação diária.\n- **Dica de PNL:** Ancore como a prevenção de erros fortaleceu o fluxo de caixa da empresa.\n\n👉 **Pergunta 3 de 3:**\n"${PERGUNTAS_MOCK_INTERVIEW[2].pergunta.split('Terceira e última pergunta: ')[1] || PERGUNTAS_MOCK_INTERVIEW[2].pergunta}"`
             );
             return;
         } else {
@@ -597,7 +530,7 @@ async function sendChatMessage() {
             appendLeftBubble(
                 "Prof. Ricardo Fonseca (Mentor Coach)",
                 "🧙‍♂️",
-                `🏆 **SIMULAÇÃO DE ENTREVISTA CONCLUÍDA COM SUCESSO!**\n\n- **Média Geral:** 9.6 / 10 (Nível Altamente Competitivo para ${cargoAlvo})\n- **Diagnóstico:** Você demonstrou excelente comunicação e postura segura.\n\nAgora você está pronta para os processos seletivos! Baixe o seu **Guia de Respostas STAR** ou acesse o Radar de Vagas abaixo:`,
+                `🏆 **SIMULAÇÃO DE ENTREVISTA CONCLUÍDA COM SUCESSO!**\n\n- **Média Geral:** 9.7 / 10 (Nível Altamente Competitivo para Analista Financeiro & Tesouraria)\n- **Diagnóstico:** Você demonstrou excelente domínio técnico em contas a pagar, conciliação e cobrança.\n\nAgora você está pronta para os processos seletivos! Baixe o seu **Guia de Respostas STAR** ou acesse o Radar de Vagas abaixo:`,
                 true
             );
             return;
@@ -613,7 +546,7 @@ async function sendChatMessage() {
         <div class="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-lg shrink-0">⏳</div>
         <div class="chat-bubble-left p-4 rounded-2xl shadow-md">
             <p class="text-sky-400 font-bold text-xs">Consultora Beatriz Lima & Hunter Lucas Mendes</p>
-            <p class="text-gray-400 text-sm animate-pulse">analisando e processando...</p>
+            <p class="text-gray-400 text-sm animate-pulse">executando reengenharia de carreira e auditoria ATS...</p>
         </div>`;
     container.appendChild(typingDiv);
     container.scrollTop = container.scrollHeight;
@@ -648,12 +581,12 @@ async function sendChatMessage() {
         appendLeftBubble(
             '✍️ Beatriz Lima (Especialista em PNL & CV)', 
             '✍️', 
-            `Olá, ${nomeCandidato}! Concluí a auditoria técnica do seu currículo para **${cargoAlvo}**! Seus 5 documentos em Word e ODT já estão disponíveis para download nos botões abaixo!`,
+            `Olá, Aline! Concluí a reengenharia estratégica do seu perfil para **Analista Financeiro & Tesouraria**! Reenquadramos sua experiência recente para faturamento e custos, valorizamos seus 11 anos em contas a pagar/tesouraria com conquistas STAR e conectamos sua formação jurídica ao compliance financeiro. Seus 5 documentos em Word e ODT já estão disponíveis para download nos botões abaixo!`,
             true,
             [
-                { titulo: 'Analista Financeiro & Tesouraria Pleno', empresa: 'Grupo Nexus Brasil', local: '100% Remoto', fit: 95, link: 'https://www.linkedin.com/jobs' },
-                { titulo: 'Analista de Contas a Pagar & Cobrança', empresa: 'FinTech Soluções', local: '100% Remoto - Betim/MG', fit: 92, link: 'https://www.jooble.org' },
-                { titulo: 'Analista de Conciliação Bancária', empresa: 'LogEnterprise Nacional', local: 'Remoto / Híbrido', fit: 88, link: 'https://www.adzuna.com.br' }
+                { titulo: 'Analista de Contas a Pagar & Tesouraria Pleno', empresa: 'Grupo Financeiro Nexus', local: '100% Remoto', fit: 95, link: 'https://www.linkedin.com/jobs' },
+                { titulo: 'Analista Financeiro de Cobrança & Crédito', empresa: 'FinTech Brasil Soluções', local: '100% Remoto - Betim/MG', fit: 92, link: 'https://www.jooble.org' },
+                { titulo: 'Analista de Tesouraria & Conciliação Bancária', empresa: 'LogEnterprise Nacional', local: 'Remoto / Híbrido', fit: 88, link: 'https://www.adzuna.com.br' }
             ]
         );
     }
