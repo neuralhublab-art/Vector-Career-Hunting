@@ -591,3 +591,41 @@ async function sendChatMessage() {
         );
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 🔄 RESET COMPLETO DO ESTADO E CHAT PARA NOVO TESTE
+// ─────────────────────────────────────────────────────────────────────────────
+
+function resetarAtendimentoCompleto() {
+    nomeCandidato = "Candidato";
+    cargoAlvo = "Profissional Especialista";
+    areaEspecialidade = "geral";
+    cidadeAlvo = "Brasil (100% Remoto)";
+    salarioPretensao = "A Combinar";
+    arquivoSelecionado = null;
+    historicoChat = [];
+    modoSimuladorEntrevista = false;
+    perguntaSimuladaAtual = 0;
+
+    const input = document.getElementById('chat-input');
+    if (input) input.value = "";
+    removerAnexo();
+
+    const container = document.getElementById('chat-messages');
+    if (container) {
+        container.innerHTML = `
+            <div class="flex items-start gap-3 max-w-[85%]">
+                <div class="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-lg shrink-0">🏛️</div>
+                <div class="chat-bubble-left p-4 rounded-2xl space-y-1 shadow-md">
+                    <div class="flex items-center justify-between gap-4">
+                        <p class="text-sky-400 font-bold text-xs">Dr. Carlos Andrade <span class="text-gray-500 font-normal">&bull; Sócio Estrategista</span></p>
+                        <span class="text-[10px] text-gray-500">Agora</span>
+                    </div>
+                    <p class="text-gray-100 leading-relaxed">Seja muito bem-vindo(a) à Vector Career Hunting! Sou o Dr. Carlos Andrade, Sócio Estrategista. Para iniciarmos sua jornada de recolocação profissional, como você gostaria de ser chamado(a)?</p>
+                </div>
+            </div>
+        `;
+    }
+    lucide.createIcons();
+    console.log("Atendimento resetado com sucesso para novo teste.");
+}

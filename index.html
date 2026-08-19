@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Neural HUB | Consultoria de Recolocação Profissional & Radar de Vagas</title>
+    <title>Vector Career Hunting (Powered by Neural Hub) | Consultoria de Recolocação & Radar de Vagas</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -59,12 +59,12 @@
                     🚀
                 </div>
                 <div>
-                    <span class="font-black text-xl text-white tracking-tight block">NEURAL HUB</span>
-                    <span class="text-xs text-sky-400 font-bold uppercase tracking-wider">Vector Career Hunter Platform</span>
+                    <span class="font-black text-xl text-white tracking-tight block">VECTOR CAREER HUNTING</span>
+                    <span class="text-xs text-sky-400 font-bold uppercase tracking-wider">Powered by Neural Hub</span>
                 </div>
             </div>
-            <div>
-                <button onclick="abrirAplicativoChat(); setTimeout(() => iniciarSimuladorEntrevista(), 400);" class="bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold px-4 py-2 rounded-xl text-xs border border-sky-500/30 flex items-center gap-2 transition-all shadow-md">
+            <div class="flex items-center gap-3">
+                <button onclick="abrirAplicativoChat(); resetarAtendimentoCompleto(); setTimeout(() => iniciarSimuladorEntrevista(), 400);" class="bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold px-4 py-2 rounded-xl text-xs border border-sky-500/30 flex items-center gap-2 transition-all shadow-md cursor-pointer">
                     <span>🎙️ Simular Entrevista com IA</span>
                 </button>
             </div>
@@ -80,19 +80,19 @@
             </div>
 
             <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-tight max-w-4xl mx-auto">
-                Do envio do currículo à entrevista: <span class="text-sky-400">Converse e encontre seu novo emprego</span>
+                Do envio do currículo à contratação: <span class="text-sky-400">Converse e encontre seu novo emprego</span>
             </h1>
 
             <p class="text-lg sm:text-xl text-gray-100 font-medium max-w-3xl mx-auto leading-relaxed">
-                Esqueça os cadastros demorados. Converse com a gente direto pelo navegador, anexe seu currículo, nos conte sobre você e receba na hora as vagas que realmente combinam com seu perfil.
+                Esqueça os cadastros demorados. Converse com a nossa equipe de especialistas direto pelo navegador, envie seu currículo e receba na hora seus documentos otimizados e as vagas de maior Fit.
             </p>
 
             <div class="pt-4 flex flex-wrap justify-center gap-4">
-                <button onclick="abrirAplicativoChat()" aria-label="Iniciar minha consultoria no chat" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-9 py-5 rounded-2xl shadow-2xl shadow-sky-500/30 text-lg transition-all transform hover:scale-[1.03] active:scale-[0.98] flex items-center gap-3 cursor-pointer">
+                <button onclick="abrirAplicativoChat(); resetarAtendimentoCompleto();" aria-label="Iniciar minha consultoria no chat" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-9 py-5 rounded-2xl shadow-2xl shadow-sky-500/30 text-lg transition-all transform hover:scale-[1.03] active:scale-[0.98] flex items-center gap-3 cursor-pointer">
                     <span>Iniciar Minha Consultoria de Recolocação</span>
                     <i data-lucide="arrow-right" class="w-6 h-6 text-slate-950"></i>
                 </button>
-                <button onclick="abrirAplicativoChat(); setTimeout(() => iniciarSimuladorEntrevista(), 400);" aria-label="Treinar entrevista com IA" class="bg-slate-900 hover:bg-slate-800 text-sky-400 font-bold px-7 py-5 rounded-2xl border border-sky-500/30 text-base transition-all flex items-center gap-2 cursor-pointer shadow-lg">
+                <button onclick="abrirAplicativoChat(); resetarAtendimentoCompleto(); setTimeout(() => iniciarSimuladorEntrevista(), 400);" aria-label="Treinar entrevista com IA" class="bg-slate-900 hover:bg-slate-800 text-sky-400 font-bold px-7 py-5 rounded-2xl border border-sky-500/30 text-base transition-all flex items-center gap-2 cursor-pointer shadow-lg">
                     <span>🎙️ Treinar Entrevista com IA</span>
                 </button>
             </div>
@@ -104,7 +104,7 @@
                     </div>
                     <h2 class="font-extrabold text-white text-xl tracking-tight">Atendimento Direto no Chat</h2>
                     <p class="text-base text-gray-200 font-normal leading-relaxed">
-                        Fale com a gente pelo computador ou celular. Sem baixar programas, sem senhas complicadas.
+                        Fale com nossa equipe de consultores pelo computador ou celular. Sem senhas ou cadastros longos.
                     </p>
                 </div>
 
@@ -124,7 +124,7 @@
                     </div>
                     <h2 class="font-extrabold text-white text-xl tracking-tight">Radar de Vagas com Fit Score</h2>
                     <p class="text-base text-gray-200 font-normal leading-relaxed">
-                        Mostramos as oportunidades da sua cidade que mais combinam com o seu perfil para você focar no que dá resultado.
+                        Acesso instantâneo a vagas no formato 100% Remoto e Híbrido alinhadas às suas expectativas de carreira e remuneração.
                     </p>
                 </div>
             </div>
@@ -132,7 +132,7 @@
         </main>
 
         <footer class="border-t border-gray-800 py-6 text-center text-xs font-semibold text-gray-300">
-            Neural HUB &copy; 2026 | Vector Career Hunter Platform &bull; WCAG AAA Compliance
+            Vector Career Hunting &copy; 2026 (Powered by Neural Hub) &bull; WCAG AAA Compliance
         </footer>
 
     </div>
@@ -142,25 +142,25 @@
         
         <header class="bg-gray-900 border border-gray-800 px-6 py-4 rounded-2xl flex flex-wrap items-center justify-between shrink-0 mb-4 gap-3">
             <div class="flex items-center space-x-3">
-                <button onclick="voltarParaLandingPage()" class="text-gray-400 hover:text-white text-xs flex items-center gap-1 bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700">
+                <button onclick="voltarParaLandingPage()" class="text-gray-400 hover:text-white text-xs flex items-center gap-1 bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700 cursor-pointer">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i>
                     <span>Voltar à Home</span>
                 </button>
                 <div>
                     <h1 class="text-base font-bold text-white flex items-center gap-2">
                         VECTOR CAREER HUNTING
-                        <span class="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">Ollama Vector-Hunter VPS & Groq Llama 3.3 70B</span>
+                        <span class="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">Powered by Neural Hub</span>
                     </h1>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5">
+                <button onclick="resetarAtendimentoCompleto()" class="bg-slate-800 hover:bg-rose-900/60 text-gray-300 hover:text-rose-300 font-bold px-3 py-1.5 rounded-xl text-xs border border-gray-700 hover:border-rose-500/40 flex items-center gap-1.5 transition-all shadow-sm cursor-pointer" title="Limpar histórico e reiniciar consultoria do zero">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                    <span>Novo Teste (Reset)</span>
+                </button>
                 <button onclick="iniciarSimuladorEntrevista()" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-4 py-1.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer">
                     <span>🎙️ Simular Entrevista</span>
                 </button>
-                <div class="text-xs text-sky-400 font-mono flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
-                    <span>Anamnese Ativa</span>
-                </div>
             </div>
         </header>
 
@@ -193,11 +193,11 @@
             <!-- BARRA DE ENTRADA DO CHAT -->
             <div class="flex gap-2 pt-3 border-t border-gray-800">
                 <input type="file" id="chat-file-input" accept=".pdf,.docx,.txt,.odt,.rtf,.png,.jpg,.jpeg,.webp" onchange="handleFileSelection(event)" class="hidden">
-                <button onclick="document.getElementById('chat-file-input').click()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3.5 py-3 rounded-xl border border-gray-700 flex items-center justify-center transition-all" title="Anexar Documento de Currículo">
+                <button onclick="document.getElementById('chat-file-input').click()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3.5 py-3 rounded-xl border border-gray-700 flex items-center justify-center transition-all cursor-pointer" title="Anexar Documento de Currículo">
                     <i data-lucide="file-plus" class="w-5 h-5 text-sky-400"></i>
                 </button>
                 <input type="text" id="chat-input" placeholder="Digite sua resposta..." onkeypress="handleKeyPress(event)" class="flex-1 bg-gray-950 text-gray-100 placeholder-gray-500 px-4 py-3 rounded-xl border border-gray-800 focus:outline-none focus:border-sky-500 text-sm">
-                <button onclick="sendChatMessage()" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2">
+                <button onclick="sendChatMessage()" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2 cursor-pointer">
                     <span>Enviar</span>
                     <i data-lucide="send" class="w-4 h-4"></i>
                 </button>
