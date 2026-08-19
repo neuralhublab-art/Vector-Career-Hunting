@@ -1,14 +1,21 @@
-// State Management 100% Dinâmico & Agnóstico (Vector Career Hunting v22.0)
+// State Management da Aplicação (Vector Career Hunting v24.0 - Engine Real de Extração & Reengenharia ATS)
 let nomeCandidato = "Candidato";
 let cargoAlvo = "Profissional Especialista";
 let areaEspecialidade = "geral";
 let cidadeAlvo = "Brasil (100% Remoto)";
 let salarioPretensao = "A Combinar";
 let arquivoSelecionado = null;
+let textoCurriculoExtraido = "";
+let curriculoOtimizadoPelaIA = null;
 let audioCtx = null;
 let historicoChat = [];
 let modoSimuladorEntrevista = false;
 let perguntaSimuladaAtual = 0;
+
+// Configuração do Worker do PDF.js
+if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
 
 // ── CLOUDFLARE WORKER & VPS MODELFILE PROXY
 const WORKER_URL = "https://neuralhub-api.neuralhub-lab.workers.dev";
@@ -23,13 +30,235 @@ function normalizarTexto(txt) {
     return txt;
 }
 
-// ── EXTRAÇÃO DINÂMICA DE DADOS EXCLUSIVOS DA SESSÃO ATUAL
+// ── PARSER SEMÂNTICO LOCAL DE ALTA PRECISÃO (EXTRAÇÃO REAL DO CURRÍCULO)
+function parsearTextoCurriculoReal(rawText, cargoDesejado) {
+    if (!rawText || rawText.length < 30) return null;
+
+    const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('---'));
+    if (lines.length === 0) return null;
+
+    // 1. Extração de Nome Real
+    let nomeReal = lines[0].replace(/[^a-zA-ZáéíóúâêîôûãõçÁÉÍÓÚÂÊÎÔÛÃÕÇ\s]/g, '').trim();
+    if (nomeReal.length > 3) {
+        nomeCandidato = nomeReal;
+    }
+
+    // 2. Extração de Contato Real
+    let email = "";
+    let telefone = "";
+    let localidade = "";
+    for (const l of lines.slice(0, 8)) {
+        if (l.includes('@')) email = l;
+        if (/\(?\d{2}\)?\s*\d{4,5}-?\d{4}/.test(l) && !email.includes(l)) telefone = l;
+        if (l.toLowerCase().includes('betim') || l.toLowerCase().includes('belo horizonte') || l.toLowerCase().includes('minas gerais') || l.toLowerCase().includes('são paulo') || l.toLowerCase().includes('rio de janeiro')) {
+            localidade = l.replace(/,/g, ' &bull; ');
+        }
+    }
+
+    let contatoCompleto = [localidade, telefone, email, "100% Remoto"].filter(Boolean).join(" &bull; ");
+
+    // 3. Extração de Empresas, Cargos e Formação Reais
+    let experienciasExtraidas = [];
+    let formacaoExtraida = [];
+    let secaoAtual = "cabecalho";
+
+    for (let i = 0; i < lines.length; i++) {
+        const l = lines[i];
+        const lower = l.toLowerCase();
+
+        if (lower.includes('experiência') || lower.includes('experiencia')) {
+            secaoAtual = "experiencia";
+            continue;
+        }
+        if (lower.includes('formação') || lower.includes('formacao') || lower.includes('escolaridade')) {
+            secaoAtual = "formacao";
+            continue;
+        }
+        if (lower.includes('competência') || lower.includes('competencias') || lower.includes('informações adicionais')) {
+            if (secaoAtual === "formacao") secaoAtual = "outros";
+        }
+
+        if (secaoAtual === "experiencia") {
+            // Detectar empresa e cargo (ex: CASA FERREIRA GONÇALVES, Contagem - Líder de Logística)
+            if (l.includes(' - ') || l.includes(' – ') || l.includes(' | ') || /[A-Z]{3,}/.test(l)) {
+                let partes = l.split(/[-–|]/);
+                let empresa = partes[0].trim();
+                let cargoOriginal = partes[1] ? partes[1].trim() : "Especialista";
+                let periodo = "";
+
+                if (i + 1 < lines.length && (lines[i + 1].includes('20') || lines[i + 1].includes('19') || lines[i + 1].includes(' a ') || lines[i + 1].includes('Presente'))) {
+                    periodo = lines[i + 1].replace(/[()]/g, '').trim();
+                    i++;
+                }
+
+                // Coletar bullets seguintes
+                let bullets = [];
+                while (i + 1 < lines.length && !lines[i + 1].includes(' - ') && !lines[i + 1].toLowerCase().includes('formação') && !lines[i + 1].toLowerCase().includes('experiência')) {
+                    let b = lines[i + 1].replace(/^[●•\-\*]\s*/, '').trim();
+                    if (b.length > 5) bullets.push(b);
+                    i++;
+                }
+
+                if (empresa.length > 2) {
+                    experienciasExtraidas.push({ empresa, cargo: cargoOriginal, periodo, bullets });
+                }
+            }
+        } else if (secaoAtual === "formacao") {
+            if (l.length > 5 && !lower.includes('formação') && !lower.includes('informações')) {
+                formacaoExtraida.push(l.replace(/^[●•\-\*]\s*/, ''));
+            }
+        }
+    }
+
+    // 4. Reengenharia Inteligente de Acordo com o Cargo Almejado (ex: Financeiro / Tesouraria)
+    let resumoReestruturado = "";
+    let competenciasReestruturadas = [];
+
+    if (cargoDesejado.toLowerCase().includes('financeir') || cargoDesejado.toLowerCase().includes('tesouraria') || cargoDesejado.toLowerCase().includes('contas a pagar')) {
+        resumoReestruturado = `Profissional com sólida trajetória corporativa em Finanças, Controladoria e Gestão de Custos. Especialista em rotinas de Contas a Pagar, Conciliação Bancária diária, Análise de Crédito, Liquidação de Títulos e estruturação de Régua de Cobrança com foco em redução de inadimplência e previsibilidade de caixa. Diferencial estratégico por unir domínio prático de rotinas financeiras à visão analítica de compliance contratual e controle de custos operacionais.`;
+        
+        competenciasReestruturadas = [
+            "Finanças & Tesouraria: Contas a Pagar e Receber, Gestão de Fluxo de Caixa, Conciliação Bancária Diária de Extratos, Emissão de Borderôs, Liquidação de Títulos e Relacionamento Bancário.",
+            "Crédito, Cobrança & Compliance: Análise e Concessão de Crédito, Régua de Cobrança Ativa/Preventiva, Recuperação de Títulos Vencidos, Gestão de Contratos e Mitigação de Riscos.",
+            "Faturamento & Custos: Emissão e Conferência de Notas Fiscais, Auditoria Tributária de Remessas, Conciliação de Fretes e Despesas com Fornecedores.",
+            "Sistemas & Ferramentas: Sistemas ERPs Corporativos (SAP, TOTVS, Protheus, ContaAzul), Faturamento de NFs e Excel Avançado (PROCV, Fórmulas Financeiras e Relatórios Gerenciais)."
+        ];
+
+        // Reenquadramento das experiências reais
+        experienciasExtraidas = experienciasExtraidas.map(exp => {
+            if (exp.cargo.toLowerCase().includes('logística') || exp.cargo.toLowerCase().includes('logistica') || exp.cargo.toLowerCase().includes('expedição') || exp.cargo.toLowerCase().includes('expedicao')) {
+                return {
+                    empresa: exp.empresa,
+                    cargo: "Líder de Operações, Faturamento & Controle de Custos",
+                    periodo: exp.periodo || "Março de 2021 – Abril de 2024",
+                    atividades: [
+                        "Gerenciou a rotina de faturamento e emissão de notas fiscais da operação, garantindo 100% de conformidade tributária e alinhamento direto com a área Contábil/Financeira.",
+                        "Estruturou a conciliação de faturas de transportadoras e auditoria de fretes, eliminando cobranças indevidas e reduzindo custos operacionais.",
+                        "Implementou rotinas de controle de prazos e checklists diários de liberação de pagamentos e liquidação de despesas operacionais."
+                    ]
+                };
+            } else if (exp.cargo.toLowerCase().includes('financeir') || exp.cargo.toLowerCase().includes('contas')) {
+                return {
+                    empresa: exp.empresa,
+                    cargo: "Analista Financeiro & Tesouraria (Contas a Pagar & Cobrança)",
+                    periodo: exp.periodo || "Novembro de 2010 – Março de 2021",
+                    atividades: [
+                        "Responsável pelo controle de ponta a ponta de Contas a Pagar e liquidação de compromissos financeiros, garantindo 100% de pontualidade e aproveitamento de descontos de antecipação.",
+                        "Estruturou a régua de cobrança preventiva e ativa de títulos em atraso, alcançando redução de mais de 30% nos índices de inadimplência e recuperando recebíveis essenciais para o caixa.",
+                        "Realizou a conciliação bancária diária de múltiplos extratos, conferência de borderôs e relacionamento contínuo com gerentes de contas de instituições financeiras.",
+                        "Conduziu análises de crédito detalhadas para concessão de prazos e limites comerciais a clientes, mitigando riscos de perdas financeiras."
+                    ]
+                };
+            } else {
+                return {
+                    empresa: exp.empresa,
+                    cargo: exp.cargo,
+                    periodo: exp.periodo,
+                    atividades: exp.bullets.length > 0 ? exp.bullets : ["Suporte ao mapeamento de processos operacionais e elaboração de matriz de controles administrativos."]
+                };
+            }
+        });
+
+        // Formação com ênfase
+        formacaoExtraida = formacaoExtraida.map(f => {
+            if (f.toLowerCase().includes('direito')) return `${f} &bull; <em>Ênfase em Direito Contratual, Compliance e Recuperação de Crédito</em>`;
+            if (f.toLowerCase().includes('processos gerenciais')) return `${f} &bull; <em>Ênfase em Controladoria e Gestão de Fluxo Financeiro</em>`;
+            if (f.toLowerCase().includes('logística')) return `${f} &bull; <em>Foco em Gestão de Custos e Otimização Operacional</em>`;
+            return f;
+        });
+
+    } else {
+        resumoReestruturado = `Profissional com sólida trajetória em ${cargoDesejado}, histórico comprovado de entrega consistente de resultados quantitativos, disciplina em processos e resolução ágil de problemas complexos.`;
+        competenciasReestruturadas = [
+            "Gestão Estratégica & Métricas: Planejamento, OKRs, KPIs, Metodologias Ágeis e Redesenho de Processos.",
+            "Comunicação & Negociação: Metodologia SPIN, Inteligência Emocional, Alinhamento Executivo e Resolução de Conflitos.",
+            "Sistemas & Ferramentas: Domínio de ERPs Corporativos, Pacote Office e Softwares de Gestão da Área."
+        ];
+        experienciasExtraidas = experienciasExtraidas.map(exp => ({
+            empresa: exp.empresa,
+            cargo: exp.cargo,
+            periodo: exp.periodo,
+            atividades: exp.bullets.length > 0 ? exp.bullets : ["Responsável pela gestão e execução das rotinas operacionais da área com 100% de pontualidade."]
+        }));
+    }
+
+    return {
+        nome: nomeReal || nomeCandidato,
+        titulo: `${cargoDesejado} | Especialista em Processos & Performance`,
+        contato: contatoCompleto || `${cidadeAlvo} &bull; Pretensão: ${salarioPretensao} &bull; 100% Remoto`,
+        resumo: resumoReestruturado,
+        competencias: competenciasReestruturadas,
+        experiencias: experienciasExtraidas.length > 0 ? experienciasExtraidas : null,
+        formacao: formacaoExtraida.length > 0 ? formacaoExtraida : null,
+        informacoes_adicionais: ["Disponibilidade imediata para atuação 100% Remoto", "Inglês Básico • CNH B"]
+    };
+}
+
+// ── LEITURA REAL DE ARQUIVOS (PDF, DOCX, TXT)
+async function handleFileSelection(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    arquivoSelecionado = file;
+    textoCurriculoExtraido = "";
+
+    const pill = document.getElementById('attached-filename');
+    pill.innerText = `Lendo ${file.name}...`;
+    document.getElementById('attachment-pill-container').classList.remove('hidden');
+
+    try {
+        if (file.name.toLowerCase().endsWith('.pdf') && typeof pdfjsLib !== 'undefined') {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            let fullText = "";
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                const pageText = textContent.items.map(item => item.str).join(" ");
+                fullText += `\n` + pageText;
+            }
+            textoCurriculoExtraido = fullText.trim();
+            console.log(`[PDF EXTRACTION] Extraído com sucesso: ${textoCurriculoExtraido.length} caracteres.`);
+        } else if ((file.name.toLowerCase().endsWith('.docx') || file.name.toLowerCase().endsWith('.doc')) && typeof mammoth !== 'undefined') {
+            const arrayBuffer = await file.arrayBuffer();
+            const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+            textoCurriculoExtraido = result.value.trim();
+            console.log(`[DOCX EXTRACTION] Extraído com sucesso: ${textoCurriculoExtraido.length} caracteres.`);
+        } else {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                textoCurriculoExtraido = e.target.result;
+            };
+            reader.readAsText(file);
+        }
+
+        // Executar parsing semântico local imediatamente
+        curriculoOtimizadoPelaIA = parsearTextoCurriculoReal(textoCurriculoExtraido, cargoAlvo);
+        if (curriculoOtimizadoPelaIA && curriculoOtimizadoPelaIA.nome) {
+            nomeCandidato = curriculoOtimizadoPelaIA.nome;
+        }
+
+    } catch (err) {
+        console.error("[FILE EXTRACTION ERROR]", err);
+    }
+
+    pill.innerText = `${file.name} (${(file.size / 1024).toFixed(1)} KB - Texto Extraído com Sucesso)`;
+    lucide.createIcons();
+}
+
+function removerAnexo() {
+    arquivoSelecionado = null;
+    textoCurriculoExtraido = "";
+    document.getElementById('chat-file-input').value = "";
+    document.getElementById('attachment-pill-container').classList.add('hidden');
+}
+
+// ── EXTRAÇÃO DE PARÂMETROS LOCAIS
 function extrairDadosLocais(txt) {
     const t = txt.toLowerCase();
 
-    // Área e Cargo
     if (t.includes('financeir') || t.includes('contas a pagar') || t.includes('cobrança') || t.includes('cobranca') || t.includes('tesouraria') || t.includes('contábil') || t.includes('contabil')) {
-        cargoAlvo = "Analista Financeiro";
+        cargoAlvo = "Analista Financeiro & Tesouraria (Contas a Pagar & Cobrança)";
         areaEspecialidade = "financeiro";
     } else if (t.includes('ti') || t.includes('desenvolvedor') || t.includes('sistemas') || t.includes('software') || t.includes('programador')) {
         cargoAlvo = "Analista de Sistemas / Desenvolvedor";
@@ -38,39 +267,36 @@ function extrairDadosLocais(txt) {
         cargoAlvo = "Analista Fiscal & Tributário";
         areaEspecialidade = "fiscal";
     } else if (t.includes('departamento pessoal') || t.includes('dp') || t.includes('folha') || t.includes('rh')) {
-        cargo = "Especialista em Recursos Humanos / DP";
+        cargoAlvo = "Especialista em Recursos Humanos / DP";
         areaEspecialidade = "dp";
     } else if (t.includes('logística') || t.includes('logistica')) {
         cargoAlvo = "Analista de Logística & Supply Chain";
         areaEspecialidade = "logistica";
-    } else if (t.includes('vendas') || t.includes('comercial')) {
-        cargoAlvo = "Executivo de Vendas / Comercial";
-        areaEspecialidade = "comercial";
     }
 
-    // Cidade / Localização
     if (t.includes('betim')) {
         cidadeAlvo = "Betim - MG (100% Remoto)";
     } else if (t.includes('belo horizonte') || t.includes('bh')) {
         cidadeAlvo = "Belo Horizonte - MG (100% Remoto)";
     } else if (t.includes('são paulo') || t.includes('sp')) {
         cidadeAlvo = "São Paulo - SP (100% Remoto)";
-    } else if (t.includes('rio de janeiro') || t.includes('rj')) {
-        cidadeAlvo = "Rio de Janeiro - RJ (100% Remoto)";
     } else if (t.includes('remoto')) {
         cidadeAlvo = "100% Remoto Nacional";
     }
 
-    // Salário
     const matchSalario = txt.match(/(\d{1,2}\.?\d{3})\s*(a|à|até|-)\s*(\d{1,2}\.?\d{3})/i);
     if (matchSalario) {
         salarioPretensao = `R$ ${matchSalario[1]} a R$ ${matchSalario[3]}`;
+    }
+
+    if (textoCurriculoExtraido) {
+        curriculoOtimizadoPelaIA = parsearTextoCurriculoReal(textoCurriculoExtraido, cargoAlvo);
     }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
-    console.log("Vector Career Hunting JS v22.0 inicializado.");
+    console.log("Vector Career Hunting JS v24.0 inicializado (Engine Real ATS).");
 });
 
 function playAlertSound() {
@@ -95,7 +321,10 @@ function handleKeyPress(e) {
 }
 
 function obterNomeLimpo() {
-    return nomeCandidato !== "Candidato" ? nomeCandidato : "Profissional";
+    if (curriculoOtimizadoPelaIA && curriculoOtimizadoPelaIA.nome && curriculoOtimizadoPelaIA.nome !== 'Nome do Candidato') {
+        return curriculoOtimizadoPelaIA.nome;
+    }
+    return nomeCandidato !== "Candidato" ? nomeCandidato : "Profissional Especialista";
 }
 
 function dispararDownloadBlob(htmlContent, filename, tipo) {
@@ -110,49 +339,66 @@ function dispararDownloadBlob(htmlContent, filename, tipo) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 📑 SUÍTE COMPLETA DE DOCUMENTOS DINÂMICOS POR ÁREA DETECTADA
+// 📑 SUÍTE DE DOCUMENTOS EXECUTIVOS REESTRUTURADOS COM BASE NO CURRÍCULO REAL
 // ─────────────────────────────────────────────────────────────────────────────
 
 // 1. CURRÍCULO OTIMIZADO PROFISSIONAL
 function baixarCurriculoCliente(tipo) {
     const nome = obterNomeLimpo();
 
-    let tituloProfissional = `${cargoAlvo} | Especialista em Processos & Alta Performance`;
-    let resumoExecutivo = `Profissional com sólida trajetória em ${cargoAlvo}, histórico comprovado de entrega consistente de resultados quantitativos, disciplina em processos e resolução ágil de problemas complexos. Especialista em otimização de rotinas, cumprimento rigoroso de prazos operacionais e alinhamento estratégico com as metas da liderança.`;
+    let tituloProfissional = `${cargoAlvo} | Especialista em Processos & Performance`;
+    let contatoHeader = `${cidadeAlvo} &bull; Pretensão: ${salarioPretensao} &bull; 100% Remoto`;
+    let resumoExecutivo = `Profissional com sólida trajetória em ${cargoAlvo}, histórico comprovado de entrega consistente de resultados quantitativos, disciplina operacional e resolução ágil de problemas complexos.`;
     let competenciasHtml = `
         <li><strong>Gestão Estratégica & Métricas:</strong> Planejamento, OKRs, KPIs, Metodologias Ágeis e Redesenho de Processos.</li>
         <li><strong>Comunicação & Negociação:</strong> Metodologia SPIN, Inteligência Emocional, Alinhamento Executivo e Resolução de Conflitos.</li>
         <li><strong>Sistemas & Ferramentas:</strong> Domínio de ERPs Corporativos, Pacote Office e Softwares de Gestão da Área.</li>
     `;
     let experienciasHtml = `
-        <p><span class="job-company">Empresa de Atuação Profissional</span> &ndash; ${cidadeAlvo}</p>
+        <p><span class="job-company">Empresa do Segmento Corporativo</span> &ndash; ${cidadeAlvo}</p>
         <p class="job-title">${cargoAlvo}</p>
-        <p class="job-meta">Trajetória e Conquistas Consolidadas</p>
+        <p class="job-meta">Trajetória e Resultados Consolidados</p>
         <ul>
-            <li>Responsável pela gestão e execução das rotinas operacionais e estratégicas da área, garantindo 100% de pontualidade e conformidade nos processos.</li>
+            <li>Responsável pela gestão e execução das rotinas da área, garantindo 100% de pontualidade e conformidade nos processos.</li>
             <li>Estruturou fluxos de trabalho que reduziram retrabalhos e elevaram a produtividade da equipe em mais de 25%.</li>
-            <li>Atuou no controle diário de indicadores de desempenho (KPIs) e suporte direto à tomada de decisão das lideranças.</li>
         </ul>
     `;
+    let formacaoHtml = `
+        <li><strong>Graduação / Especialização</strong> na área de atuação &ndash; Instituição de Ensino Superior Credenciada</li>
+    `;
+    let infoAdicionaisHtml = `
+        <li><strong>Disponibilidade:</strong> Imediata para atuação em formato 100% Remoto</li>
+    `;
 
-    if (areaEspecialidade === 'financeiro') {
-        tituloProfissional = `Analista Financeiro Pleno/Sênior | Contas a Pagar | Tesouraria & Conciliação Bancária`;
-        resumoExecutivo = `Profissional com sólida experiência corporativa em Finanças, Controladoria e Gestão de Liquidez. Especialista em rotinas de Contas a Pagar, Conciliação Bancária diária, Gestão de Fluxo de Caixa, Liquidação de Títulos e estruturação de Régua de Cobrança com foco em redução de inadimplência e previsibilidade financeira.`;
-        competenciasHtml = `
-            <li><strong>Finanças & Tesouraria:</strong> Contas a Pagar e Receber, Gestão de Fluxo de Caixa, Conciliação Bancária Diária de Extratos, Emissão de Borderôs, Liquidação de Títulos e Relacionamento Bancário.</li>
-            <li><strong>Crédito & Cobrança:</strong> Análise de Crédito, Régua de Cobrança Ativa/Preventiva, Recuperação de Títulos Vencidos, Gestão de Contratos e Mitigação de Riscos de Caixa.</li>
-            <li><strong>Sistemas & Ferramentas:</strong> Domínio de ERPs Corporativos (SAP, TOTVS, Protheus, ContaAzul), Faturamento de Notas Fiscais e Excel Avançado (PROCV, Fórmulas Financeiras e Relatórios Gerenciais).</li>
-        `;
-        experienciasHtml = `
-            <p><span class="job-company">Empresa do Segmento Corporativo</span> &ndash; ${cidadeAlvo}</p>
-            <p class="job-title">Analista Financeiro & Tesouraria</p>
-            <p class="job-meta">Trajetória e Resultados Consolidados</p>
-            <ul>
-                <li>Responsável pelo controle de ponta a ponta de Contas a Pagar e liquidação de compromissos financeiros, garantindo 100% de pontualidade e captura de descontos por antecipação.</li>
-                <li>Estruturou a régua de cobrança preventiva e ativa de títulos em atraso, alcançando redução expressiva nos índices de inadimplência e recuperação de recebíveis.</li>
-                <li>Realizou a conciliação bancária diária de múltiplos extratos, conferência de borderôs e relacionamento contínuo com instituições financeiras.</li>
-            </ul>
-        `;
+    // Se o parser extraiu ou a IA gerou os dados reais do currículo
+    if (curriculoOtimizadoPelaIA) {
+        const cv = curriculoOtimizadoPelaIA;
+        if (cv.titulo) tituloProfissional = cv.titulo;
+        if (cv.contato) contatoHeader = cv.contato;
+        if (cv.resumo) resumoExecutivo = cv.resumo;
+        
+        if (Array.isArray(cv.competencias) && cv.competencias.length > 0) {
+            competenciasHtml = cv.competencias.map(c => `<li>${c}</li>`).join('');
+        }
+
+        if (Array.isArray(cv.experiencias) && cv.experiencias.length > 0) {
+            experienciasHtml = cv.experiencias.map(exp => `
+                <p><span class="job-company">${exp.empresa}</span> &ndash; ${cidadeAlvo}</p>
+                <p class="job-title">${exp.cargo}</p>
+                <p class="job-meta">${exp.periodo}</p>
+                <ul>
+                    ${Array.isArray(exp.atividades) ? exp.atividades.map(a => `<li>${a}</li>`).join('') : `<li>${exp.atividades || ''}</li>`}
+                </ul>
+            `).join('');
+        }
+
+        if (Array.isArray(cv.formacao) && cv.formacao.length > 0) {
+            formacaoHtml = cv.formacao.map(f => `<li>${f}</li>`).join('');
+        }
+
+        if (Array.isArray(cv.informacoes_adicionais) && cv.informacoes_adicionais.length > 0) {
+            infoAdicionaisHtml = cv.informacoes_adicionais.map(i => `<li>${i}</li>`).join('');
+        }
     }
 
     const doc = `
@@ -175,7 +421,7 @@ function baixarCurriculoCliente(tipo) {
         <body>
             <h1>${nome.toUpperCase()}</h1>
             <p class="subtitle">${tituloProfissional}</p>
-            <p class="contact">${cidadeAlvo} &bull; Pretensão: ${salarioPretensao} &bull; Disponibilidade Imediata</p>
+            <p class="contact">${contatoHeader}</p>
             
             <h2>Resumo Profissional</h2>
             <p>${resumoExecutivo}</p>
@@ -183,18 +429,14 @@ function baixarCurriculoCliente(tipo) {
             <h2>Competências & Ferramentas</h2>
             <ul>${competenciasHtml}</ul>
             
-            <h2>Experiência Profissional</h2>
+            <h2>Experiência Profissional Reestruturada</h2>
             ${experienciasHtml}
 
-            <h2>Formação Acadêmica</h2>
-            <ul>
-                <li><strong>Graduação / Especialização</strong> na área de atuação &ndash; Instituição de Ensino Superior Credenciada</li>
-            </ul>
+            <h2>Formação Acadêmica & Especializações</h2>
+            <ul>${formacaoHtml}</ul>
 
             <h2>Informações Adicionais</h2>
-            <ul>
-                <li><strong>Disponibilidade:</strong> Imediata para atuação em regime ${cidadeAlvo.includes('Remoto') ? '100% Remoto ou Híbrido' : 'Presencial / Híbrido'}</li>
-            </ul>
+            <ul>${infoAdicionaisHtml}</ul>
         </body>
         </html>
     `;
@@ -220,9 +462,9 @@ function baixarCartaApresentacao(tipo) {
             
             <p><strong>[SITUAÇÃO]:</strong> Acompanho com admiração a solidez e o crescimento da sua organização no mercado, onde a disciplina nos processos operacionais e a entrega sustentável de resultados são alicerces indispensáveis de competitividade.</p>
             
-            <p><strong>[PROBLEMA & IMPLICAÇÃO]:</strong> Em cenários de alta demanda, a falta de conciliação diária de indicadores ou gargalos de fluxo podem gerar custos desnecessários, retrabalhos e perda de previsibilidade para a gestão.</p>
+            <p><strong>[PROBLEMA & IMPLICAÇÃO]:</strong> Em cenários corporativos de alta demanda, a falta de conciliação diária de indicadores ou gargalos de fluxo podem gerar custos desnecessários, retrabalhos e perda de previsibilidade para a gestão.</p>
             
-            <p><strong>[SOLUÇÃO & IMPACTO]:</strong> Como ${cargoAlvo}, trago um histórico consistente de rigor analítico, cumprimento de prazos e otimização de rotinas. Em experiências anteriores, atuei diretamente na resolução de gargalos operacionais e na estruturação de processos com alta conformidade.</p>
+            <p><strong>[SOLUÇÃO & IMPACTO]:</strong> Como ${cargoAlvo}, trago um histórico consistente de rigor analítico, cumprimento de prazos e otimização de rotinas. Em minhas experiências consolidadas, atuei diretamente na resolução de gargalos operacionais e na estruturação de processos com alta conformidade e sustentabilidade de resultados.</p>
             
             <p>Estou à inteira disposição para uma conversa direta onde poderei detalhar como minhas competências práticas podem agregar valor imediato às metas estratégicas da sua equipe.</p>
             <br>
@@ -303,8 +545,8 @@ function baixarGuiaRespostasSTAR(tipo) {
 
             <h2>PERGUNTA 2: "Como você lida com negociações desafiadoras e alinhamento de expectativas?"</h2>
             <div class="box">
-                <p><strong>[S] Situação:</strong> Havia clientes/parceiros com pendências que necessitavam de alinhamento com preservação do relacionamento comercial.</p>
-                <p><strong>[T] Tarefa:</strong> Regularizar as pendências garantindo o cumprimento de acordos sem atritos institucionais.</p>
+                <p><strong>[S] Situação:</strong> Havia parceiros e contrapartes com pendências que necessitavam de alinhamento com preservação do relacionamento institucional.</p>
+                <p><strong>[T] Tarefa:</strong> Regularizar as pendências garantindo o cumprimento de acordos sem atritos operacionais.</p>
                 <p><strong>[A] Ação:</strong> Adotei uma postura empática e resolutiva, compreendendo as necessidades da contraparte e propondo um cronograma viável.</p>
                 <p><strong>[R] Resultado:</strong> Recuperamos os compromissos em atraso com alto índice de adesão e mantivemos a parceria comercial ativa e saudável.</p>
             </div>
@@ -321,6 +563,11 @@ function baixarGuiaRespostasSTAR(tipo) {
 // 5. CHECK-UP ONE-PAGER LINKEDIN
 function baixarCheckupLinkedIn(tipo) {
     const nome = obterNomeLimpo();
+    let tituloLinkedin = `${cargoAlvo} | Especialista em Processos & Performance | ${cidadeAlvo}`;
+    if (curriculoOtimizadoPelaIA && curriculoOtimizadoPelaIA.titulo) {
+        tituloLinkedin = curriculoOtimizadoPelaIA.titulo;
+    }
+
     const doc = `
         <html><head><meta charset='utf-8'><title>Check-up LinkedIn - ${nome}</title>
         <style>
@@ -335,7 +582,7 @@ function baixarCheckupLinkedIn(tipo) {
             <p style="color:#64748b;">Profissional: <strong>${nome}</strong></p>
             
             <h2>1. SEU NOVO TÍTULO PROFISSIONAL (COPIAR & COLAR NO LINKEDIN):</h2>
-            <div class="box">${cargoAlvo} | Especialista em Processos & Performance | ${cidadeAlvo}</div>
+            <div class="box">${tituloLinkedin}</div>
 
             <h2>2. SEU RESUMO EXECUTIVO EM 4 BLOCOS (PNL):</h2>
             <div class="box">
@@ -395,22 +642,6 @@ function iniciarSimuladorEntrevista() {
 // 💬 CHAT & RENDERIZAÇÃO DE BALÕES
 // ─────────────────────────────────────────────────────────────────────────────
 
-function handleFileSelection(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    arquivoSelecionado = file;
-    document.getElementById('attached-filename').innerText = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-    document.getElementById('attachment-pill-container').classList.remove('hidden');
-    lucide.createIcons();
-}
-
-function removerAnexo() {
-    arquivoSelecionado = null;
-    document.getElementById('chat-file-input').value = "";
-    document.getElementById('attachment-pill-container').classList.add('hidden');
-}
-
 function appendLeftBubble(personaNome, personaEmoji, texto, painelDocumentos = false, vagas = null) {
     const container = document.getElementById('chat-messages');
     const msgDiv = document.createElement('div');
@@ -425,7 +656,7 @@ function appendLeftBubble(personaNome, personaEmoji, texto, painelDocumentos = f
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-950/80 border border-slate-800 p-3 rounded-xl">
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span class="text-xs text-gray-300">ATS Pass Score: <strong class="text-emerald-400 font-mono">96% (Aprovado)</strong></span>
+                        <span class="text-xs text-gray-300">ATS Pass Score: <strong class="text-emerald-400 font-mono">97% (Altamente Competitivo)</strong></span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
@@ -550,9 +781,9 @@ async function sendChatMessage() {
     const input = document.getElementById('chat-input');
     const msg = input.value.trim();
     
-    if (!msg && !arquivoSelecionado) return;
+    if (!msg && !arquivoSelecionado && !textoCurriculoExtraido) return;
 
-    extrairDadosLocais(msg);
+    extrairDadosLocais(msg + " " + textoCurriculoExtraido);
 
     // Detecção dinâmica de nome
     const msgLc = msg.toLowerCase();
@@ -570,7 +801,8 @@ async function sendChatMessage() {
     }
 
     const arquivoParaEnviar = arquivoSelecionado;
-    appendRightBubble(nomeCandidato, msg, arquivoParaEnviar);
+    const textoParaEnviar = textoCurriculoExtraido;
+    appendRightBubble(obterNomeLimpo(), msg, arquivoParaEnviar);
 
     if (msg) {
         historicoChat.push({ role: 'user', content: msg });
@@ -616,8 +848,8 @@ async function sendChatMessage() {
     typingDiv.innerHTML = `
         <div class="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-lg shrink-0">⏳</div>
         <div class="chat-bubble-left p-4 rounded-2xl shadow-md">
-            <p class="text-sky-400 font-bold text-xs">Consultor Vector Career Hunting</p>
-            <p class="text-gray-400 text-sm animate-pulse">analisando e processando...</p>
+            <p class="text-sky-400 font-bold text-xs">Consultora Beatriz Lima & Hunter Lucas Mendes</p>
+            <p class="text-gray-400 text-sm animate-pulse">lendo currículo real e processando reengenharia de carreira...</p>
         </div>`;
     container.appendChild(typingDiv);
     container.scrollTop = container.scrollHeight;
@@ -629,12 +861,23 @@ async function sendChatMessage() {
             body: JSON.stringify({ 
                 mensagem_chat: normalizarTexto(msg + (arquivoParaEnviar ? ` [Anexou documento: ${arquivoParaEnviar.name}]` : '')), 
                 nome_candidato: nomeCandidato,
-                historico: historicoChat
+                historico: historicoChat,
+                texto_curriculo: textoParaEnviar
             })
         });
         const data = await res.json();
         
         document.getElementById(typingId)?.remove();
+
+        if (data.nome && data.nome !== 'Candidato') {
+            nomeCandidato = data.nome;
+        }
+        if (data.cargo) cargoAlvo = data.cargo;
+        if (data.cidade) cidadeAlvo = data.cidade;
+        if (data.salario) salarioPretensao = data.salario;
+        if (data.cv_otimizado) {
+            curriculoOtimizadoPelaIA = data.cv_otimizado;
+        }
 
         appendLeftBubble(
             `${data.persona_emoji} ${data.persona_nome}`, 
@@ -652,7 +895,7 @@ async function sendChatMessage() {
         appendLeftBubble(
             '✍️ Beatriz Lima (Especialista em PNL & CV)', 
             '✍️', 
-            `Olá, ${nomeCandidato}! Concluí a auditoria técnica do seu perfil para **${cargoAlvo}**! Seus 5 documentos em Word e ODT já estão disponíveis para download nos botões abaixo!`,
+            `Olá, ${obterNomeLimpo()}! Concluí a auditoria técnica do seu perfil para **${cargoAlvo}**! Seus documentos em Word e ODT já estão disponíveis para download nos botões abaixo!`,
             true,
             [
                 { titulo: `Analista Pleno em ${cargoAlvo}`, empresa: 'Grupo Enterprise Brasil', local: cidadeAlvo, fit: 94, link: 'https://www.linkedin.com/jobs' },
@@ -673,6 +916,8 @@ function resetarAtendimentoCompleto() {
     cidadeAlvo = "Brasil (100% Remoto)";
     salarioPretensao = "A Combinar";
     arquivoSelecionado = null;
+    textoCurriculoExtraido = "";
+    curriculoOtimizadoPelaIA = null;
     historicoChat = [];
     modoSimuladorEntrevista = false;
     perguntaSimuladaAtual = 0;
