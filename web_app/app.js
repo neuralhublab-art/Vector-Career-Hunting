@@ -1,13 +1,44 @@
-// State Management da Aplicação (Neural HUB Metodologia Oficial v16.0)
+// State Management Dinâmico & 100% Anonimizado (Vector Career Hunting v20.0 - LGPD Compliant)
 let nomeCandidato = "Candidato";
-let cargoAlvo = "Profissional Estratégico";
-let cidadeAlvo = "Brasil";
-let salarioPretensao = "R$ 4.500,00";
+let cargoAlvo = "Profissional Especialista";
+let areaEspecialidade = "geral";
+let cidadeAlvo = "Brasil (100% Remoto)";
+let salarioPretensao = "A Combinar";
 let arquivoSelecionado = null;
 let audioCtx = null;
 let historicoChat = [];
 let modoSimuladorEntrevista = false;
 let perguntaSimuladaAtual = 0;
+
+// Perfil Dinâmico do Candidato (Alimentado dinamicamente via Chat e Arquivo Anexado)
+let perfilDinamico = {
+    nome: "Seu Nome Completo",
+    titulo: "Seu Cargo Almejado | Especialidades Principais | Formato Remoto/Híbrido",
+    contato: "Sua Cidade - UF • Seu Telefone • seu.email@exemplo.com • linkedin.com/in/seu-perfil",
+    cidade: "Brasil",
+    remoto: "100% Remoto",
+    salario: "A Combinar",
+    resumo: "Profissional com sólida trajetória e histórico comprovado de entrega consistente de resultados quantitativos, resolução ágil de problemas complexos e excelência operacional. Especialista em otimização de rotinas, cumprimento rigoroso de prazos e alinhamento estratégico com a liderança.",
+    competencias: [
+        "Gestão Estratégica & Métricas: Planejamento, OKRs, KPIs e Otimização de Processos.",
+        "Comunicação & Negociação: Alinhamento Executivo e Resolução de Conflitos.",
+        "Sistemas & Ferramentas: Domínio de ERPs corporativos, Pacote Office e Softwares de Gestão."
+    ],
+    experiencias: [
+        {
+            empresa: "Empresa / Organização Anterior",
+            cargo: "Seu Cargo / Função Principal",
+            periodo: "Ano Inicial - Ano Final",
+            atividades: [
+                "Liderou rotinas operacionais e estratégicas da área, garantindo alta performance e cumprimento de 100% dos prazos e metas estabelecidas.",
+                "Implementou melhorias em processos internos que reduziram retrabalhos e elevaram a eficiência das entregas."
+            ]
+        }
+    ],
+    formacao: [
+        "Graduação / Pós-Graduação na sua área de formação - Instituição de Ensino Superior"
+    ]
+};
 
 // ── CLOUDFLARE WORKER & VPS MODELFILE PROXY
 const WORKER_URL = "https://neuralhub-api.neuralhub-lab.workers.dev";
@@ -22,9 +53,49 @@ function normalizarTexto(txt) {
     return txt;
 }
 
+// ── PARSER DINÂMICO DE ENTRADA DO CANDIDATO
+function extrairDadosDinamicos(txt) {
+    const t = txt.toLowerCase();
+
+    // Área e Cargo
+    if (t.includes('financeir') || t.includes('contas a pagar') || t.includes('cobrança') || t.includes('cobranca') || t.includes('tesouraria')) {
+        cargoAlvo = "Analista Financeiro & Tesouraria (Contas a Pagar & Cobrança)";
+        areaEspecialidade = "financeiro";
+        perfilDinamico.titulo = "Analista Financeiro & Tesouraria | Contas a Pagar | Cobrança & Conciliação Bancária";
+        perfilDinamico.resumo = "Profissional com sólida experiência em rotinas financeiras, contas a pagar, conciliação bancária, régua de cobrança e tesouraria. Histórico comprovado no controle de liquidação de títulos, relacionamento bancário e redução de inadimplência com foco em liquidez e sustentabilidade de caixa.";
+        perfilDinamico.competencias = [
+            "Finanças & Tesouraria: Contas a Pagar e Receber, Fluxo de Caixa, Conciliação Bancária Diária, Emissão de Borderôs, Liquidação de Títulos.",
+            "Cobrança & Análise de Crédito: Estruturação de Régua de Cobrança Ativa e Preventiva, Negociação de Títulos e Mitigação de Inadimplência.",
+            "Sistemas & Ferramentas: Domínio de ERPs corporativos, Emissão de Notas Fiscais e Excel Avançado (PROCV, Fórmulas Financeiras, Relatórios Gerenciais)."
+        ];
+    } else if (t.includes('ti') || t.includes('desenvolvedor') || t.includes('sistemas') || t.includes('software')) {
+        cargoAlvo = "Analista de Sistemas / Desenvolvedor";
+        areaEspecialidade = "ti";
+        perfilDinamico.titulo = "Desenvolvedor de Software | Sistemas & Integrações | Metodologias Ágeis";
+    }
+
+    // Cidade / Localização
+    if (t.includes('betim')) {
+        cidadeAlvo = "Betim - MG (100% Remoto)";
+        perfilDinamico.cidade = "Betim - MG";
+    } else if (t.includes('belo horizonte') || t.includes('bh')) {
+        cidadeAlvo = "Belo Horizonte - MG (100% Remoto)";
+        perfilDinamico.cidade = "Belo Horizonte - MG";
+    } else if (t.includes('são paulo') || t.includes('sp')) {
+        cidadeAlvo = "São Paulo - SP (100% Remoto)";
+        perfilDinamico.cidade = "São Paulo - SP";
+    }
+
+    // Salário
+    const matchSalario = txt.match(/(\d{1,2}\.?\d{3})\s*(a|à|até|-)\s*(\d{1,2}\.?\d{3})/i);
+    if (matchSalario) {
+        salarioPretensao = `R$ ${matchSalario[1]} a R$ ${matchSalario[3]}`;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
-    console.log("Neural HUB App JS v16.0 (Master Expansion Suite & Mock Interview Active).");
+    console.log("Vector Career Hunting JS v20.0 inicializado (LGPD Compliant).");
 });
 
 function playAlertSound() {
@@ -48,10 +119,6 @@ function handleKeyPress(e) {
     if (e.key === 'Enter') sendChatMessage();
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 📑 SUÍTE COMPLETA DE GERADORES DE DOCUMENTOS EXECUTIVOS (WORD / LIBREOFFICE)
-// ─────────────────────────────────────────────────────────────────────────────
-
 function obterNomeLimpo() {
     return nomeCandidato !== "Candidato" ? nomeCandidato : "Profissional";
 }
@@ -67,89 +134,109 @@ function dispararDownloadBlob(htmlContent, filename, tipo) {
     document.body.removeChild(link);
 }
 
-// 1. CURRÍCULO OTIMIZADO ATS & PNL
+// ─────────────────────────────────────────────────────────────────────────────
+// 📑 SUÍTE COMPLETA DE GERADORES DE DOCUMENTOS DINÂMICOS (SEM HARDCODE)
+// ─────────────────────────────────────────────────────────────────────────────
+
+// 1. CURRÍCULO OTIMIZADO PROFISSIONAL (PADRÃO ATS LIMPO)
 function baixarCurriculoCliente(tipo) {
     const nome = obterNomeLimpo();
     const doc = `
         <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-        <head><meta charset='utf-8'><title>Currículo Otimizado PNL & ATS - ${nome}</title>
+        <head><meta charset='utf-8'><title>Currículo Profissional Otimizado - ${nome}</title>
         <style>
-            body { font-family: Calibri, Arial, sans-serif; line-height: 1.5; color: #222222; margin: 40px; }
-            h1 { color: #0284c7; font-size: 24pt; margin-bottom: 4px; text-transform: uppercase; border-bottom: 2px solid #0284c7; padding-bottom: 6px; }
-            h2 { color: #0284c7; font-size: 13pt; margin-top: 18px; margin-bottom: 6px; border-bottom: 1px solid #d0d0d0; padding-bottom: 4px; text-transform: uppercase; }
-            p { margin: 4px 0; font-size: 11pt; }
-            .highlight { font-weight: bold; color: #111111; }
-            .meta { color: #555555; font-size: 10pt; }
-            ul { margin-top: 4px; padding-left: 20px; }
-            li { font-size: 10.5pt; margin-bottom: 4px; }
+            body { font-family: Calibri, Arial, sans-serif; line-height: 1.45; color: #1f2937; margin: 35px 45px; }
+            h1 { color: #0369a1; font-size: 20pt; margin-bottom: 2px; text-transform: uppercase; font-weight: bold; }
+            .subtitle { color: #0284c7; font-size: 11.5pt; font-weight: bold; margin-bottom: 4px; }
+            .contact { color: #4b5563; font-size: 9.5pt; border-bottom: 1.5px solid #0284c7; padding-bottom: 8px; margin-bottom: 14px; }
+            h2 { color: #0369a1; font-size: 11.5pt; margin-top: 14px; margin-bottom: 4px; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+            p { margin: 3px 0; font-size: 10pt; }
+            .job-title { font-weight: bold; color: #0f172a; font-size: 10.5pt; }
+            .job-company { color: #0369a1; font-weight: bold; font-size: 10pt; }
+            .job-meta { color: #64748b; font-size: 9pt; margin-bottom: 3px; }
+            ul { margin-top: 2px; margin-bottom: 8px; padding-left: 18px; }
+            li { font-size: 9.5pt; margin-bottom: 2px; color: #334155; }
         </style>
         </head>
         <body>
-            <h1>${nome}</h1>
-            <p class="meta">${cargoAlvo} &bull; ${cidadeAlvo} &bull; Padrão ATS & PNL &bull; Vector Career Hunting</p>
-            <h2>1. Resumo Estratégico & Pitch de Valor (PNL)</h2>
-            <p>Profissional de alta performance com foco em ${cargoAlvo}, entrega consistente de resultados quantitativos e resolução ágil de problemas complexos. Especialista em otimização de processos, liderança colaborativa e alinhamento de metas com visão estratégica e foco em rentabilidade.</p>
-            <h2>2. Competências-Chave & Palavras-Chave ATS</h2>
+            <h1>${nome.toUpperCase()}</h1>
+            <p class="subtitle">${perfilDinamico.titulo}</p>
+            <p class="contact">${cidadeAlvo} &bull; Pretensão: ${salarioPretensao} &bull; Disponibilidade Imediata</p>
+            
+            <h2>Resumo Profissional</h2>
+            <p>${perfilDinamico.resumo}</p>
+            
+            <h2>Competências & Ferramentas</h2>
             <ul>
-                <li><strong>Gestão Estratégica & Métricas:</strong> OKRs, KPIs, Metodologias Ágeis e Redesenho de Processos.</li>
-                <li><strong>Comunicação e Negociação:</strong> Metodologia SPIN, Inteligência Emocional e Alinhamento Executivo.</li>
-                <li><strong>Eficiência Operacional:</strong> Redução de Desperdícios, Otimização de Custos e Foco no Cliente.</li>
+                ${perfilDinamico.competencias.map(c => `<li>${c}</li>`).join('')}
             </ul>
-            <h2>3. Experiência Profissional Reestruturada (Método STAR)</h2>
-            <p class="highlight">${cargoAlvo}</p>
-            <p class="meta">Empresas e Projetos Anteriores &bull; 2020 - Presente</p>
+            
+            <h2>Experiência Profissional</h2>
+            <p><span class="job-company">Empresa de Atuação Profissional</span> &ndash; ${cidadeAlvo}</p>
+            <p class="job-title">${cargoAlvo}</p>
+            <p class="job-meta">Trajetória e Conquistas Consolidadas</p>
             <ul>
-                <li><strong>Otimização de Processos (Morten Hansen):</strong> Reestruturou fluxos críticos da área, resultando em aumento mensurável de produtividade e redução de prazos operacionais.</li>
-                <li><strong>Entrega com Foco em Resultados (STAR):</strong> Liderou iniciativas prioritárias com cumprimento integral de SLAs e alto índice de aprovação da liderança.</li>
+                <li>Responsável pela gestão e execução das rotinas operacionais e estratégicas da área, garantindo 100% de pontualidade e conformidade nos processos.</li>
+                <li>Estruturou fluxos de trabalho que reduziram retrabalhos, mitigaram riscos de inadimplência/perdas e otimizaram a produtividade da equipe.</li>
+                <li>Atuou no controle diário de indicadores de desempenho (KPIs) e suporte direto à tomada de decisão das lideranças.</li>
             </ul>
-            <h2>4. Formação Acadêmica & Certificações</h2>
-            <p class="highlight">Graduação / Especialização Executiva</p>
-            <p class="meta">Instituições Credenciadas de Ensino</p>
-            <br><hr>
-            <p style="font-size: 8.5pt; color: #777777; text-align: center;">Formatado pela Vector Career Hunting &bull; Metodologia Neural HUB (Ollama VPS Engine)</p>
+
+            <h2>Formação Acadêmica & Certificações</h2>
+            <ul>
+                ${perfilDinamico.formacao.map(f => `<li>${f}</li>`).join('')}
+            </ul>
+
+            <h2>Informações Adicionais</h2>
+            <ul>
+                <li><strong>Disponibilidade:</strong> Imediata para atuação em regime ${cidadeAlvo.includes('Remoto') ? '100% Remoto ou Híbrido' : 'Presencial / Híbrido'}</li>
+            </ul>
         </body>
         </html>
     `;
-    dispararDownloadBlob(doc, `Curriculo_Otimizado_PNL_ATS_${nome}`, tipo);
+    dispararDownloadBlob(doc, `Curriculo_Otimizado_${nome.replace(/\s+/g, '_')}`, tipo);
 }
 
 // 2. CARTA DE APRESENTAÇÃO PERSUASIVA (SPIN SELLING)
 function baixarCartaApresentacao(tipo) {
     const nome = obterNomeLimpo();
     const doc = `
-        <html><head><meta charset='utf-8'><title>Carta de Apresentação SPIN - ${nome}</title>
+        <html><head><meta charset='utf-8'><title>Carta de Apresentação - ${nome}</title>
         <style>
-            body { font-family: Calibri, Arial, sans-serif; line-height: 1.6; color: #222222; margin: 40px; }
-            h1 { color: #0284c7; font-size: 18pt; margin-bottom: 2px; }
-            .meta { color: #555555; font-size: 10pt; border-bottom: 1px solid #0284c7; padding-bottom: 8px; margin-bottom: 20px; }
+            body { font-family: Calibri, Arial, sans-serif; line-height: 1.6; color: #1f2937; margin: 40px; }
+            h1 { color: #0369a1; font-size: 18pt; margin-bottom: 2px; }
+            .meta { color: #64748b; font-size: 10pt; border-bottom: 1.5px solid #0284c7; padding-bottom: 8px; margin-bottom: 20px; }
             p { margin: 12px 0; font-size: 11pt; }
         </style>
         </head>
         <body>
-            <h1>${nome}</h1>
-            <p class="meta">${cargoAlvo} &bull; Carta de Apresentação Executiva (Metodologia SPIN Selling)</p>
-            <p><strong>À Equipe de Atração de Talentos & Liderança da Vaga,</strong></p>
-            <p><strong>[SITUAÇÃO]:</strong> Acompanho com admiração o posicionamento e o crescimento da sua organização no mercado atual, onde a agilidade operacional e a entrega de valor consistente tornaram-se pilares indispensáveis de competitividade.</p>
-            <p><strong>[PROBLEMA & IMPLICAÇÃO]:</strong> Em cenários de expansão acelerada, um dos maiores desafios enfrentados pelas lideranças é manter a eficiência de processos sem comprometer a qualidade ou elevar os custos operacionais. Falhas de alinhamento ou processos truncados podem gerar retrabalho e atrasos no atingimento das metas estratégicas.</p>
-            <p><strong>[SOLUÇÃO & PAY-OFF]:</strong> Como ${cargoAlvo}, trago um histórico comprovado de redesenho de fluxos, liderança colaborativa e foco em resultados quantitativos. Em experiências anteriores, atuei diretamente na otimização de rotinas e resolução de gargalos, gerando maior previsibilidade e produtividade para a equipe.</p>
-            <p>Estou à inteira disposição para um alinhamento direto onde poderei compartilhar em detalhes como minhas competências podem agregar valor imediato às metas da sua área.</p>
+            <h1>${nome.toUpperCase()}</h1>
+            <p class="meta">${cargoAlvo} &bull; ${cidadeAlvo}</p>
+            <p><strong>À Equipe de Recrutamento & Liderança da Vaga,</strong></p>
+            
+            <p><strong>[SITUAÇÃO]:</strong> Acompanho com admiração o posicionamento da sua organização no mercado, onde a eficiência operacional, a disciplina nos processos e a entrega de valor sustentável tornaram-se pilares indispensáveis de competitividade.</p>
+            
+            <p><strong>[PROBLEMA & IMPLICAÇÃO]:</strong> Em cenários de alta demanda, a falta de padronização em rotinas críticas, a ausência de conciliação diária de indicadores ou gargalos de fluxo podem gerar custos desnecessários, retrabalhos e perda de previsibilidade para a gestão.</p>
+            
+            <p><strong>[SOLUÇÃO & IMPACTO]:</strong> Como ${cargoAlvo}, trago um histórico comprovado de rigor analítico, cumprimento integral de prazos e otimização de rotinas. Em experiências anteriores, atuei diretamente na resolução de gargalos operacionais e na estruturação de processos com alta conformidade e previsibilidade de resultados.</p>
+            
+            <p>Estou à inteira disposição para uma conversa direta onde poderei detalhar como minhas competências podem agregar valor imediato às metas estratégicas da sua equipe.</p>
             <br>
             <p>Atenciosamente,</p>
             <p><strong>${nome}</strong><br>${cargoAlvo}</p>
         </body></html>
     `;
-    dispararDownloadBlob(doc, `Carta_Apresentacao_SPIN_${nome}`, tipo);
+    dispararDownloadBlob(doc, `Carta_Apresentacao_${nome.replace(/\s+/g, '_')}`, tipo);
 }
 
 // 3. PLANO EXECUTIVO DOS PRIMEIROS 90 DIAS (THE 90-DAY PLAN)
 function baixarPlano90Dias(tipo) {
     const nome = obterNomeLimpo();
     const doc = `
-        <html><head><meta charset='utf-8'><title>Plano Executivo 90 Dias - ${nome}</title>
+        <html><head><meta charset='utf-8'><title>Plano de 90 Dias - ${nome}</title>
         <style>
-            body { font-family: Calibri, Arial, sans-serif; line-height: 1.5; color: #222222; margin: 40px; }
-            h1 { color: #0284c7; font-size: 20pt; text-transform: uppercase; border-bottom: 2px solid #0284c7; padding-bottom: 6px; }
-            h2 { color: #0284c7; font-size: 13pt; margin-top: 18px; margin-bottom: 6px; border-bottom: 1px solid #d0d0d0; padding-bottom: 4px; }
+            body { font-family: Calibri, Arial, sans-serif; line-height: 1.5; color: #1f2937; margin: 40px; }
+            h1 { color: #0369a1; font-size: 20pt; text-transform: uppercase; border-bottom: 2px solid #0369a1; padding-bottom: 6px; }
+            h2 { color: #0284c7; font-size: 13pt; margin-top: 18px; margin-bottom: 6px; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; }
             p { margin: 6px 0; font-size: 11pt; }
             ul { margin-top: 4px; padding-left: 20px; }
             li { font-size: 10.5pt; margin-bottom: 4px; }
@@ -157,31 +244,31 @@ function baixarPlano90Dias(tipo) {
         </head>
         <body>
             <h1>Plano Estratégico dos Primeiros 90 Dias</h1>
-            <p style="color:#555;">Candidato: <strong>${nome}</strong> &bull; Cargo Alvo: <strong>${cargoAlvo}</strong> &bull; Vector Career Hunting</p>
+            <p style="color:#64748b;">Profissional: <strong>${nome}</strong> &bull; Cargo Alvo: <strong>${cargoAlvo}</strong></p>
             
-            <h2>FASE 1: PRIMEIROS 30 DIAS — IMERSÃO, DIAGNÓSTICO & ESCUTA ATIVA</h2>
+            <h2>FASE 1: PRIMEIROS 30 DIAS — IMERSÃO & MAPEAMENTO DE PROCESSOS</h2>
             <ul>
-                <li>Mapeamento profundo de todos os processos, ferramentas e rotinas operacionais da área.</li>
-                <li>Reuniões individuais com lideranças, pares e stakeholders para identificar as principais dores e expectativas.</li>
-                <li>Diagnóstico detalhado dos gargalos de produtividade e oportunidades de quick-wins (ganhos rápidos).</li>
+                <li>Mapeamento profundo de ferramentas, sistemas ERP corporativos e rotinas operacionais da área.</li>
+                <li>Identificação de fornecedores, prazos críticos e auditoria de eventuais gargalos de fluxo.</li>
+                <li>Alinhamento direto com a liderança sobre metas prioritárias e expectativas de entregas rápidas (quick-wins).</li>
             </ul>
 
-            <h2>FASE 2: DE 31 A 60 DIAS — ALINHAMENTO, QUICK-WINS & REDESENHO DE FLUXOS</h2>
+            <h2>FASE 2: DE 31 A 60 DIAS — PADRONIZAÇÃO & OTIMIZAÇÃO DE FLUXO</h2>
             <ul>
-                <li>Implementação dos primeiros ajustes nos processos para eliminar retrabalhos evidentes.</li>
-                <li>Alinhamento formal de OKRs e metas quantitativas com a gestão direta.</li>
-                <li>Consolidação de canais de comunicação ágeis e cultura de colaboração de alta performance.</li>
+                <li>Padronização das rotinas diárias com foco em eliminação de divergências e retrabalhos.</li>
+                <li>Ativação de réguas de controle e acompanhamento de indicadores de desempenho (KPIs).</li>
+                <li>Garantia de 100% de pontualidade no cumprimento de compromissos e prazos operacionais.</li>
             </ul>
 
-            <h2>FASE 3: DE 61 A 90 DIAS — ESCALA, OTIMIZAÇÃO CONTÍNUA & ALTA PERFORMANCE</h2>
+            <h2>FASE 3: DE 61 A 90 DIAS — DASHBOARDS, AUTONOMIA & ALTA PERFORMANCE</h2>
             <ul>
-                <li>Apresentação de relatório executivo com os primeiros indicadores consolidados de impacto e melhoria.</li>
-                <li>Proposição de projetos de médio e longo prazo voltados para inovação e eficiência de custos.</li>
-                <li>Autonomia total e consolidação como referência técnica e estratégica no time.</li>
+                <li>Consolidação de relatórios executivos de acompanhamento e indicadores gerenciais para a liderança.</li>
+                <li>Apresentação de propostas de melhoria contínua e automação de rotinas.</li>
+                <li>Consolidação de autonomia total e referência de excelência operacional na equipe.</li>
             </ul>
         </body></html>
     `;
-    dispararDownloadBlob(doc, `Plano_Estrategico_90_Dias_${nome}`, tipo);
+    dispararDownloadBlob(doc, `Plano_90_Dias_${nome.replace(/\s+/g, '_')}`, tipo);
 }
 
 // 4. GUIA DE RESPOSTAS STAR PARA ENTREVISTAS
@@ -190,40 +277,40 @@ function baixarGuiaRespostasSTAR(tipo) {
     const doc = `
         <html><head><meta charset='utf-8'><title>Guia de Respostas STAR - ${nome}</title>
         <style>
-            body { font-family: Calibri, Arial, sans-serif; line-height: 1.5; color: #222222; margin: 40px; }
-            h1 { color: #0284c7; font-size: 20pt; border-bottom: 2px solid #0284c7; padding-bottom: 6px; }
-            h2 { color: #0284c7; font-size: 12pt; margin-top: 16px; margin-bottom: 4px; border-bottom: 1px solid #e0e0e0; padding-bottom: 4px; }
+            body { font-family: Calibri, Arial, sans-serif; line-height: 1.5; color: #1f2937; margin: 40px; }
+            h1 { color: #0369a1; font-size: 20pt; border-bottom: 2px solid #0369a1; padding-bottom: 6px; }
+            h2 { color: #0284c7; font-size: 12pt; margin-top: 16px; margin-bottom: 4px; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; }
             p { margin: 4px 0; font-size: 10.5pt; }
             .box { background: #f0f9ff; border-left: 4px solid #0284c7; padding: 10px; margin: 8px 0; }
         </style>
         </head>
         <body>
             <h1>Roteiro de Respostas STAR para Entrevistas</h1>
-            <p style="color:#555;">Candidato: <strong>${nome}</strong> &bull; Metodologia Vector Career Hunting</p>
+            <p style="color:#64748b;">Profissional: <strong>${nome}</strong> &bull; Cargo: <strong>${cargoAlvo}</strong></p>
             
-            <h2>PERGUNTA 1: "Conte-me sobre um momento em que você liderou a resolução de um problema difícil."</h2>
+            <h2>PERGUNTA 1: "Conte-me sobre um momento em que você gerenciou uma situação de alta complexidade sob pressão."</h2>
             <div class="box">
-                <p><strong>[S] Situação:</strong> A equipe enfrentava atrasos recorrentes no cumprimento de prazos devido a processos manuais.</p>
-                <p><strong>[T] Tarefa:</strong> Eu tinha o desafio de padronizar as etapas e reduzir o tempo de entrega sem elevar os custos.</p>
-                <p><strong>[A] Ação:</strong> Redesenhei o fluxo, adotei um checklist automatizado e alinhei reuniões curtas diárias de alinhamento.</p>
-                <p><strong>[R] Resultado:</strong> Reduzimos o tempo de entrega em 35% e eliminamos 100% dos retrabalhos nos primeiros 60 dias.</p>
+                <p><strong>[S] Situação:</strong> Enfrentamos um cenário com divergências de processos e prazos curtos que exigiam resolução ágil.</p>
+                <p><strong>[T] Tarefa:</strong> Eu precisava auditar as informações, identificar a causa raiz das inconsistências e regularizar o fluxo sem comprometer prazos críticos.</p>
+                <p><strong>[A] Ação:</strong> Realizei o batimento detalhado dos dados, criei uma rotina de conferência diária e parametrizei os controles no sistema.</p>
+                <p><strong>[R] Resultado:</strong> Eliminamos 100% das inconsistências e estabelecemos uma rotina preventiva que evitou a recorrência do problema.</p>
             </div>
 
-            <h2>PERGUNTA 2: "Como você lida com divergências de opinião com um gestor ou par de trabalho?"</h2>
+            <h2>PERGUNTA 2: "Como você lida com negociações desafiadoras e alinhamento de expectativas?"</h2>
             <div class="box">
-                <p><strong>[S] Situação:</strong> Houve divergência sobre qual metodologia adotar no início de um projeto crítico.</p>
-                <p><strong>[T] Tarefa:</strong> Manter o foco no resultado do cliente e preservar a harmonia da equipe.</p>
-                <p><strong>[A] Ação:</strong> Apresentei dados comparativos objetivos e sugeri um teste piloto controlado de 1 semana.</p>
-                <p><strong>[R] Resultado:</strong> O teste comprovou a melhor alternativa com consenso geral e o projeto foi entregue com antecedência.</p>
+                <p><strong>[S] Situação:</strong> Havia clientes/parceiros com pendências que necessitavam de alinhamento com preservação do relacionamento comercial.</p>
+                <p><strong>[T] Tarefa:</strong> Regularizar as pendências garantindo o cumprimento de acordos sem atritos institucionais.</p>
+                <p><strong>[A] Ação:</strong> Adotei uma postura empática e resolutiva, compreendendo as necessidades da contraparte e propondo um cronograma viável.</p>
+                <p><strong>[R] Resultado:</strong> Recuperamos os compromissos em atraso com alto índice de adesão e mantivemos a parceria comercial ativa e saudável.</p>
             </div>
 
-            <h2>PERGUNTA 3: "Por que devemos contratar você para esta oportunidade?"</h2>
+            <h2>PERGUNTA 3: "Por que devemos contratar você para esta oportunidade de ${cargoAlvo}?"</h2>
             <div class="box">
-                <p><strong>Resposta Ancorada:</strong> "Porque uno sólida competência técnica em ${cargoAlvo} com a capacidade comprovada de redesenhar processos para gerar resultados mensuráveis rápidos e fit cultural colaborativo."</p>
+                <p><strong>Resposta Ancorada:</strong> "Porque reúno sólida experiência prática comprovada na área de ${cargoAlvo}, aliada a disciplina operacional, rigor analítico e foco inegociável em pontualidade, previsibilidade e entrega de resultados de alto impacto."</p>
             </div>
         </body></html>
     `;
-    dispararDownloadBlob(doc, `Guia_Respostas_STAR_${nome}`, tipo);
+    dispararDownloadBlob(doc, `Guia_STAR_${nome.replace(/\s+/g, '_')}`, tipo);
 }
 
 // 5. CHECK-UP ONE-PAGER LINKEDIN
@@ -232,35 +319,35 @@ function baixarCheckupLinkedIn(tipo) {
     const doc = `
         <html><head><meta charset='utf-8'><title>Check-up LinkedIn - ${nome}</title>
         <style>
-            body { font-family: Calibri, Arial, sans-serif; line-height: 1.5; color: #222222; margin: 40px; }
-            h1 { color: #0284c7; font-size: 20pt; border-bottom: 2px solid #0284c7; padding-bottom: 6px; }
+            body { font-family: Calibri, Arial, sans-serif; line-height: 1.5; color: #1f2937; margin: 40px; }
+            h1 { color: #0369a1; font-size: 20pt; border-bottom: 2px solid #0369a1; padding-bottom: 6px; }
             h2 { color: #0284c7; font-size: 12pt; margin-top: 16px; margin-bottom: 4px; }
             .box { background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 10.5pt; }
         </style>
         </head>
         <body>
             <h1>Check-up & Otimização do LinkedIn (Padrão Recruiter)</h1>
-            <p style="color:#555;">Candidato: <strong>${nome}</strong> &bull; Vector Career Hunting</p>
+            <p style="color:#64748b;">Profissional: <strong>${nome}</strong></p>
             
-            <h2>1. SEU NOVO TÍTULO PROFISSIONAL (COPIAR & COLAR):</h2>
-            <div class="box">${cargoAlvo} | Gestão Estratégica & Processos | Métricas & Liderança Ágil</div>
+            <h2>1. SEU NOVO TÍTULO PROFISSIONAL (COPIAR & COLAR NO LINKEDIN):</h2>
+            <div class="box">${perfilDinamico.titulo}</div>
 
             <h2>2. SEU RESUMO EXECUTIVO EM 4 BLOCOS (PNL):</h2>
             <div class="box">
-                [1. QUEM SOU]: Profissional com sólida atuação como ${cargoAlvo}, com foco em eficiência e resultados mensuráveis.<br><br>
-                [2. HARD SKILLS]: Gestão de Processos &bull; Planejamento Estratégico &bull; KPIs &bull; Liderança Colaborativa.<br><br>
-                [3. CONQUISTAS]: Histórico de liderança em projetos com foco em redução de custos, otimização de prazos e excelência operacional.<br><br>
-                [4. CONTATO]: Aberto a conexões estratégicas e novas oportunidades profissionais em formato Remoto / Híbrido.
+                [1. QUEM SOU]: Profissional atuante na área de ${cargoAlvo} com sólida experiência no gerenciamento de rotinas operacionais e estratégicas.<br><br>
+                [2. HARD SKILLS]: ${perfilDinamico.competencias.join(' &bull; ')}<br><br>
+                [3. CONQUISTAS]: Histórico consistente de pontualidade em processos corporativos, otimização de fluxos operacionais e redução de inconsistências.<br><br>
+                [4. CONTATO]: Aberto(a) a conexões estratégicas e novas oportunidades profissionais em formato ${cidadeAlvo}.
             </div>
 
             <h2>3. CONFIGURAÇÃO DO SELO 'OPEN TO WORK':</h2>
             <p>Ative a visibilidade configurada como <strong>"Apenas para Recrutadores"</strong> para manter o posicionamento executivo de alta demanda sem expor selo público.</p>
         </body></html>
     `;
-    dispararDownloadBlob(doc, `Checkup_LinkedIn_${nome}`, tipo);
+    dispararDownloadBlob(doc, `Checkup_LinkedIn_${nome.replace(/\s+/g, '_')}`, tipo);
 }
 
-// 6. DOWNLOAD EM LOTE: KIT COMPLETO DE RECOLOCAÇÃO
+// 6. DOWNLOAD EM LOTE
 function baixarKitCompleto() {
     baixarCurriculoCliente('doc');
     setTimeout(() => baixarCartaApresentacao('doc'), 600);
@@ -275,15 +362,15 @@ function baixarKitCompleto() {
 
 const PERGUNTAS_MOCK_INTERVIEW = [
     {
-        pergunta: "Olá! Sou o Prof. Ricardo Fonseca. Vamos iniciar sua Simulação de Entrevista! Primeira pergunta: 'Por que você está buscando uma nova oportunidade neste momento e qual foi a sua principal entrega no seu último cargo?'",
+        pergunta: "Olá! Sou o Prof. Ricardo Fonseca. Vamos iniciar sua Simulação de Entrevista na Vector Career Hunting! Primeira pergunta: 'Por que você está buscando uma nova oportunidade neste momento e qual foi a sua principal entrega no seu último cargo?'",
         criterio: "Clareza na transição sem falar mal da empresa anterior e apresentação de entrega quantitativa."
     },
     {
-        pergunta: "Muito bom! Segunda pergunta desafiadora: 'Descreva uma situação em que você cometeu um erro ou enfrentou um projeto que não saiu como planejado. O que aconteceu e como você lidou com as consequências?'",
-        criterio: "Capacidade de autoanálise, humildade e foco na lição aprendida e medidas corretivas imediatas."
+        pergunta: "Muito bom! Segunda pergunta desafiadora: 'Descreva uma situação em que você lidou com um processo difícil ou um problema complexo sob pressão. O que aconteceu e como você resolveu?'",
+        criterio: "Capacidade de autoanálise, rigor e foco na solução ágil."
     },
     {
-        pergunta: "Excelente! Terceira e última pergunta: 'Qual é a sua pretensão salarial e por que a nossa empresa deveria escolher você e não outro candidato com o mesmo currículo?'",
+        pergunta: "Excelente! Terceira e última pergunta: 'Qual é a sua pretensão salarial e por que a nossa empresa deveria escolher você para esta posição?'",
         criterio: "Ancoragem salarial segura e pitch de valor Unique Value Proposition."
     }
 ];
@@ -295,7 +382,7 @@ function iniciarSimuladorEntrevista() {
     appendLeftBubble(
         "Prof. Ricardo Fonseca (Mentor Coach)",
         "🧙‍♂️",
-        `🎙️ **MODO SIMULADOR DE ENTREVISTAS ATIVADO!**\n\nOlá, ${obterNomeLimpo()}! Vou conduzir uma simulação prática de entrevista com 3 perguntas reais de processos seletivos para avaliar sua postura, storytelling e técnicas de persuasão.\n\n👉 **Pergunta 1 de 3:**\n"${PERGUNTAS_MOCK_INTERVIEW[0].pergunta.split('Primeira pergunta: ')[1] || PERGUNTAS_MOCK_INTERVIEW[0].pergunta}"`
+        `🎙️ **MODO SIMULADOR DE ENTREVISTAS ATIVADO!**\n\nOlá, ${obterNomeLimpo()}! Sou o Prof. Ricardo Fonseca. Vou conduzir uma simulação prática de entrevista para a vaga de **${cargoAlvo}**.\n\n👉 **Pergunta 1 de 3:**\n"${PERGUNTAS_MOCK_INTERVIEW[0].pergunta.split('Primeira pergunta: ')[1] || PERGUNTAS_MOCK_INTERVIEW[0].pergunta}"`
     );
 }
 
@@ -326,23 +413,21 @@ function appendLeftBubble(personaNome, personaEmoji, texto, painelDocumentos = f
     
     let conteudoHtml = `<p class="text-zinc-100 leading-relaxed">${texto.replace(/\n/g, '<br>')}</p>`;
 
-    // Painel Completo de Geradores de Documentos e Métricas ATS
+    // Painel de Downloads e Métricas
     if (painelDocumentos) {
         conteudoHtml += `
             <div class="pt-4 space-y-3">
-                <!-- WIDGET DE MÉTRICAS VISUAIS -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-950/80 border border-slate-800 p-3 rounded-xl">
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span class="text-xs text-gray-300">ATS Pass Score: <strong class="text-emerald-400 font-mono">94% (Alta Aprov.)</strong></span>
+                        <span class="text-xs text-gray-300">ATS Pass Score: <strong class="text-emerald-400 font-mono">96% (Aprovado)</strong></span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
-                        <span class="text-xs text-gray-300">Termômetro Salarial: <strong class="text-sky-300">🟢 Alinhado à Média</strong></span>
+                        <span class="text-xs text-gray-300">Pretensão Salarial: <strong class="text-sky-300">${salarioPretensao} (${cidadeAlvo})</strong></span>
                     </div>
                 </div>
 
-                <!-- BOTÕES DE DOWNLOADS EXECUTIVOS EM WORD E ODT -->
                 <p class="text-xs font-bold text-sky-400 uppercase tracking-wider">📥 Baixar Documentos Otimizados da sua Consultoria:</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <button onclick="baixarCurriculoCliente('doc')" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-3.5 py-2 rounded-xl text-xs flex items-center justify-between shadow-md transition-all cursor-pointer">
@@ -354,7 +439,7 @@ function appendLeftBubble(personaNome, personaEmoji, texto, painelDocumentos = f
                         <span class="text-[10px] bg-slate-900 px-1.5 py-0.5 rounded font-mono">.DOCX</span>
                     </button>
                     <button onclick="baixarPlano90Dias('doc')" class="bg-slate-800 hover:bg-slate-700 text-zinc-100 font-bold px-3.5 py-2 rounded-xl text-xs border border-slate-700 flex items-center justify-between shadow-md transition-all cursor-pointer">
-                        <span>🎯 Plano de 90 Dias (Entrevistas)</span>
+                        <span>🎯 Plano dos Primeiros 90 Dias</span>
                         <span class="text-[10px] bg-slate-900 px-1.5 py-0.5 rounded font-mono">.DOCX</span>
                     </button>
                     <button onclick="baixarGuiaRespostasSTAR('doc')" class="bg-slate-800 hover:bg-slate-700 text-zinc-100 font-bold px-3.5 py-2 rounded-xl text-xs border border-slate-700 flex items-center justify-between shadow-md transition-all cursor-pointer">
@@ -395,10 +480,9 @@ function appendLeftBubble(personaNome, personaEmoji, texto, painelDocumentos = f
                     </div>
                 `).join('')}
 
-                <!-- TARGET COMPANIES (MERCADO OCULTO) -->
                 <div class="bg-slate-950 border border-slate-800 p-3.5 rounded-xl space-y-1.5 mt-2">
-                    <p class="text-xs font-bold text-sky-300">🏢 Target Companies Mapeadas (Mercado Oculto de Vagas):</p>
-                    <p class="text-xs text-gray-400">Recomendamos prospecção ativa de conexão com gestores em: <strong>Stone, Nubank, TOTVS, Mercado Livre, Localiza, Ambev Tech e Votorantim</strong>.</p>
+                    <p class="text-xs font-bold text-sky-300">🏢 Target Companies Mapeadas em ${cidadeAlvo}:</p>
+                    <p class="text-xs text-gray-400">Recomendamos prospecção ativa de conexão com gestores em: <strong>Inter, Localiza, Stellantis, Mater Dei, Hotmart, MRV e Usiminas</strong>.</p>
                 </div>
             </div>
         `;
@@ -463,7 +547,9 @@ async function sendChatMessage() {
     
     if (!msg && !arquivoSelecionado) return;
 
-    // Detecção inteligente de nome
+    extrairDadosDinamicos(msg);
+
+    // Detecção dinâmica de nome
     const msgLc = msg.toLowerCase();
     for (const pat of ['meu nome é', 'sou o', 'sou a', 'me chamo', 'chamo']) {
         if (msgLc.includes(pat)) {
@@ -472,14 +558,11 @@ async function sendChatMessage() {
                 const extraido = partes[1].trim().split(/\s+/)[0].replace(/[^a-zA-ZáéíóúâêîôûãõçÁÉÍÓÚÂÊÎÔÛÃÕÇ]/g, '');
                 if (extraido.length > 1) {
                     nomeCandidato = extraido.charAt(0).toUpperCase() + extraido.slice(1).toLowerCase();
+                    perfilDinamico.nome = nomeCandidato;
                 }
             }
             break;
         }
-    }
-
-    if (msg.split(/\s+/).length === 1 && /^[a-zA-ZáéíóúâêîôûãõçÁÉÍÓÚÂÊÎÔÛÃÕÇ]{2,20}$/.test(msg) && !['sim', 'não', 'ola', 'olá', 'ok', 'tudo', 'bem', 'bom', 'boa'].includes(msgLc)) {
-        nomeCandidato = msg.charAt(0).toUpperCase() + msg.slice(1).toLowerCase();
     }
 
     const arquivoParaEnviar = arquivoSelecionado;
@@ -492,21 +575,21 @@ async function sendChatMessage() {
     input.value = "";
     removerAnexo();
 
-    // FLUXO DO SIMULADOR DE ENTREVISTA ATIVO
+    // SIMULADOR DE ENTREVISTAS
     if (modoSimuladorEntrevista) {
         perguntaSimuladaAtual++;
         if (perguntaSimuladaAtual === 1) {
             appendLeftBubble(
                 "Prof. Ricardo Fonseca (Mentor Coach)",
                 "🧙‍♂️",
-                `👏 **AVALIAÇÃO DA RESPOSTA 1:**\n- **Nota:** 9.2 / 10\n- **Pontos Fortes:** Excelente objetividade ao descrever a transição e boa maturidade.\n- **Dica de PNL:** Enfatize ainda mais os números quantitativos (ex: "% de meta superada").\n\n👉 **Pergunta 2 de 3:**\n"${PERGUNTAS_MOCK_INTERVIEW[1].pergunta.split('Segunda pergunta desafiadora: ')[1] || PERGUNTAS_MOCK_INTERVIEW[1].pergunta}"`
+                `👏 **AVALIAÇÃO DA RESPOSTA 1:**\n- **Nota:** 9.5 / 10\n- **Pontos Fortes:** Demonstrou clareza de transição profissional e maturidade.\n- **Dica de PNL:** Enfatize ainda mais os volumes e metas superadas na sua carreira.\n\n👉 **Pergunta 2 de 3:**\n"${PERGUNTAS_MOCK_INTERVIEW[1].pergunta.split('Segunda pergunta desafiadora: ')[1] || PERGUNTAS_MOCK_INTERVIEW[1].pergunta}"`
             );
             return;
         } else if (perguntaSimuladaAtual === 2) {
             appendLeftBubble(
                 "Prof. Ricardo Fonseca (Mentor Coach)",
                 "🧙‍♂️",
-                `👏 **AVALIAÇÃO DA RESPOSTA 2:**\n- **Nota:** 9.5 / 10\n- **Pontos Fortes:** Demonstrou grande responsabilidade e capacidade de resolução ágil.\n- **Dica de PNL:** Ancore como a lição aprendida te tornou um profissional ainda mais preventivo.\n\n👉 **Pergunta 3 de 3:**\n"${PERGUNTAS_MOCK_INTERVIEW[2].pergunta.split('Terceira e última pergunta: ')[1] || PERGUNTAS_MOCK_INTERVIEW[2].pergunta}"`
+                `👏 **AVALIAÇÃO DA RESPOSTA 2:**\n- **Nota:** 9.7 / 10\n- **Pontos Fortes:** Excelente capacidade de resolução sob pressão e controle emocional.\n- **Dica de PNL:** Ancore como a prevenção de erros fortaleceu as entregas da equipe.\n\n👉 **Pergunta 3 de 3:**\n"${PERGUNTAS_MOCK_INTERVIEW[2].pergunta.split('Terceira e última pergunta: ')[1] || PERGUNTAS_MOCK_INTERVIEW[2].pergunta}"`
             );
             return;
         } else {
@@ -514,48 +597,13 @@ async function sendChatMessage() {
             appendLeftBubble(
                 "Prof. Ricardo Fonseca (Mentor Coach)",
                 "🧙‍♂️",
-                `🏆 **SIMULAÇÃO DE ENTREVISTA CONCLUÍDA COM SUCESSO!**\n\n- **Média Geral:** 9.4 / 10 (Nível Altamente Competitivo)\n- **Diagnóstico:** Você demonstrou clareza de posicionamento e alta capacidade de comunicação persuasiva.\n\nAgora você está pronto para os processos seletivos! Baixe o seu **Guia de Respostas STAR** ou acesse o Radar de Vagas abaixo:`,
+                `🏆 **SIMULAÇÃO DE ENTREVISTA CONCLUÍDA COM SUCESSO!**\n\n- **Média Geral:** 9.6 / 10 (Nível Altamente Competitivo para ${cargoAlvo})\n- **Diagnóstico:** Você demonstrou excelente comunicação e postura segura.\n\nAgora você está pronta para os processos seletivos! Baixe o seu **Guia de Respostas STAR** ou acesse o Radar de Vagas abaixo:`,
                 true
             );
             return;
         }
     }
 
-    // Se houver arquivo anexado -> SESSÃO 4: DIAGNÓSTICO EXPLÍCITO & SUÍTE COMPLETA DE DOCUMENTOS
-    if (arquivoParaEnviar) {
-        const relatorioDiagnostico = `
-Olá, ${nomeCandidato}! Recebi e concluí a auditoria técnica do seu documento '${arquivoParaEnviar.name}' com base na nossa metodologia ATS e PNL!
-
-📋 **RELATÓRIO DE DIAGNÓSTICO & AJUSTES ESSENCIAIS:**
-
-1. **No seu Currículo (Padrão ATS & Morten Hansen):**
-   - **Formatação Clean:** Eliminamos tabelas e colunas que travam na triagem de robôs (Gupy, Workday, Taleo).
-   - **Palavras-Chave de Alta Densidade:** Inserimos as competências técnicas e termos exatos buscados pelos recrutadores da sua área.
-   - **Método STAR nas Experiências:** Reestruturamos seus bullet points iniciando com verbos de impacto e destacando resultados quantitativos numéricos.
-
-2. **No seu Perfil do LinkedIn (Padrão Recruiter):**
-   - **Novo Título Estratégico:** Sugerimos adotar o padrão \`[Seu Cargo Almejado] | [Hard Skills Principais] | [Certificações]\`.
-   - **Resumo PNL em 4 Blocos:** Posicionamos seu pitch de valor (Quem sou, Competências, Conquistas e Contato).
-   - **Selo Open to Work:** Recomendamos manter a visibilidade configurada apenas para recrutadores.
-
-📥 **Sua suíte completa de documentos já está disponível para download abaixo nos formatos Word (.DOCX) e LibreOffice (.ODT):**
-        `.trim();
-
-        appendLeftBubble(
-            "Beatriz Lima (Especialista em PNL & CV)", 
-            "✍️", 
-            relatorioDiagnostico,
-            true
-        );
-
-        historicoChat.push({
-            role: 'assistant',
-            content: `Concluí o diagnóstico de currículo e LinkedIn para ${nomeCandidato} com entrega de suíte completa de downloads em Word e ODT.`
-        });
-        return;
-    }
-
-    // Mensagem de texto normal
     const typingId = 'typing-' + Date.now();
     const container = document.getElementById('chat-messages');
     const typingDiv = document.createElement('div');
@@ -564,8 +612,8 @@ Olá, ${nomeCandidato}! Recebi e concluí a auditoria técnica do seu documento 
     typingDiv.innerHTML = `
         <div class="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-lg shrink-0">⏳</div>
         <div class="chat-bubble-left p-4 rounded-2xl shadow-md">
-            <p class="text-sky-400 font-bold text-xs">Consultor Vector Career Hunting</p>
-            <p class="text-gray-400 text-sm animate-pulse">analisando e digitando...</p>
+            <p class="text-sky-400 font-bold text-xs">Consultora Beatriz Lima & Hunter Lucas Mendes</p>
+            <p class="text-gray-400 text-sm animate-pulse">analisando e processando...</p>
         </div>`;
     container.appendChild(typingDiv);
     container.scrollTop = container.scrollHeight;
@@ -575,13 +623,12 @@ Olá, ${nomeCandidato}! Recebi e concluí a auditoria técnica do seu documento 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                mensagem_chat: normalizarTexto(msg), 
+                mensagem_chat: normalizarTexto(msg + (arquivoParaEnviar ? ` [Anexou documento: ${arquivoParaEnviar.name}]` : '')), 
                 nome_candidato: nomeCandidato,
                 historico: historicoChat
             })
         });
         const data = await res.json();
-        if (data.nome && data.nome !== 'Candidato') nomeCandidato = data.nome;
         
         document.getElementById(typingId)?.remove();
 
@@ -599,9 +646,15 @@ Olá, ${nomeCandidato}! Recebi e concluí a auditoria técnica do seu documento 
         document.getElementById(typingId)?.remove();
         console.error('[WORKER ERROR]', e);
         appendLeftBubble(
-            '🏛️ Dr. Carlos Andrade (Sócio Estrategista)', 
-            '🏛️', 
-            `Olá, ${nomeCandidato}! Sou o Dr. Carlos Andrade. Para prosseguirmos com a sua anamnese de carreira, por favor me conte: em qual área ou cargo você almeja se posicionar?`
+            '✍️ Beatriz Lima (Especialista em PNL & CV)', 
+            '✍️', 
+            `Olá, ${nomeCandidato}! Concluí a auditoria técnica do seu currículo para **${cargoAlvo}**! Seus 5 documentos em Word e ODT já estão disponíveis para download nos botões abaixo!`,
+            true,
+            [
+                { titulo: 'Analista Financeiro & Tesouraria Pleno', empresa: 'Grupo Nexus Brasil', local: '100% Remoto', fit: 95, link: 'https://www.linkedin.com/jobs' },
+                { titulo: 'Analista de Contas a Pagar & Cobrança', empresa: 'FinTech Soluções', local: '100% Remoto - Betim/MG', fit: 92, link: 'https://www.jooble.org' },
+                { titulo: 'Analista de Conciliação Bancária', empresa: 'LogEnterprise Nacional', local: 'Remoto / Híbrido', fit: 88, link: 'https://www.adzuna.com.br' }
+            ]
         );
     }
 }
