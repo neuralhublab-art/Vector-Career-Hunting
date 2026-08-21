@@ -936,7 +936,7 @@ function resetarAtendimentoCompleto() {
                         <p class="text-sky-400 font-bold text-xs">Dr. Carlos Andrade <span class="text-gray-500 font-normal">&bull; Sócio Estrategista</span></p>
                         <span class="text-[10px] text-gray-500">Agora</span>
                     </div>
-                    <p class="text-gray-100 leading-relaxed">Seja muito bem-vindo(a) à Vector Career Hunting! Sou o Dr. Carlos Andrade, Sócio Estrategista. Para iniciarmos sua jornada de recolocação profissional, como você gostaria de ser chamado(a)?</p>
+                    <p class="text-gray-100 leading-relaxed">Olá! Seja muito bem-vindo(a) à Vector Career Hunting. Sou o Dr. Carlos Andrade, Sócio Estrategista. Estamos aqui para cuidar da sua recolocação do início ao fim. Para começarmos nosso alinhamento, como posso te chamar e qual é o seu momento profissional hoje?</p>
                 </div>
             </div>
         `;
